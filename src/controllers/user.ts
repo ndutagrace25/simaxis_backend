@@ -20,6 +20,7 @@ const getUsers = async (req: Request, res: Response) => {
   }
 };
 
+// create a new user account
 const saveUser = async (req: Request, res: Response) => {
   const { username, phone, email, role, password } = req.body;
 
