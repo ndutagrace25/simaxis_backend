@@ -26,7 +26,7 @@ module.exports = {
     dialectOptions: {
       ssl: {
         require: true,
-        rejectUnauthorized: false // Heroku requires this for self-signed certificates
+        rejectUnauthorized: false // Heroku requires this for self-signed certificate
       }
     }
   },
