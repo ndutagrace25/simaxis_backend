@@ -11,23 +11,14 @@ interface UserAttributes {
   updated_at?: Date;
 }
 
-interface UserCreationAttributes
-  extends Optional<
-    UserAttributes,
-    "id" | "phone" | "created_at" | "updated_at"
-  > {}
-
-export class User
-  extends Model<UserAttributes, UserCreationAttributes>
-  implements UserAttributes
-{
+export class User extends Model<UserAttributes> implements UserAttributes {
   public id!: string;
   public username!: string;
   public password!: string;
   public email!: string;
-  public phone?: string;
+  public phone!: string;
   public role!: string;
-  public created_at?: Date;
+  public created_at!: Date;
   public updated_at?: Date;
 }
 
@@ -55,7 +46,7 @@ export const UserFactory = (sequelize: Sequelize) => {
       },
       phone: {
         type: DataTypes.STRING(20),
-        allowNull: true,
+        allowNull: false,
       },
       role: {
         type: DataTypes.STRING(20),
@@ -73,7 +64,7 @@ export const UserFactory = (sequelize: Sequelize) => {
     {
       sequelize,
       timestamps: false,
-      tableName: "Users",
+      tableName: "users",
     }
   );
 

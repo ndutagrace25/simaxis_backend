@@ -1,16 +1,25 @@
 import { Sequelize } from "sequelize";
 import { UserFactory } from "./user";
 
-import config from "../config/config";
+import { CustomerFactory } from "./customer";
+import dotenv from "dotenv";
+dotenv.config();
+
+const env = process.env.NODE_ENV;
+
+// @ts-ignore
+const config = require("../config/config")[env];
+
 
 const sequelize = new Sequelize(
   // @ts-ignore
-  config?.db?.database,
-  config.db.username,
-  config.db.password,
-  { dialect: config.db.dialect, logging: config.db.logging }
+  config.database,
+  config.username,
+  config.password,
+  config
 );
 
 const User = UserFactory(sequelize);
+const Customer = CustomerFactory(sequelize);
 
-export { sequelize, User };
+export { sequelize, Customer, User };

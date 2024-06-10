@@ -1,7 +1,17 @@
 import { User } from "../models";
 
 const getAllUsers = async () => {
-  const users = await User.findAll();
+  const users = await User.findAll({
+    attributes: [
+      "id",
+      "username",
+      "email",
+      "phone",
+      "role",
+      "created_at",
+      "updated_at",
+    ],
+  });
   return users;
 };
 
