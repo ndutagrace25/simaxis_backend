@@ -11,11 +11,13 @@ export const registerUser: ValidationChain[] = [
     .withMessage("Last name is required")
     .isString()
     .trim(),
-  body("phone")
+  body("phone").exists().withMessage("Last name is required").isString().trim(),
+  body("username")
     .exists()
-    .withMessage("Last name is required")
+    .withMessage("Username is required")
     .isString()
     .trim(),
+  body("national_id").exists().withMessage("ID is required").isNumeric().trim(),
   body("email")
     .exists()
     .withMessage("Email is required")
@@ -32,11 +34,11 @@ export const registerUser: ValidationChain[] = [
 ];
 
 export const loginUser: ValidationChain[] = [
-  body("email")
+  body("phone")
     .exists()
-    .withMessage("Email is required")
-    .isEmail()
-    .withMessage("Invalid email")
+    .withMessage("Phone number is required")
+    .isString()
+    .withMessage("Invalid phone")
     .trim(),
   body("password")
     .exists()

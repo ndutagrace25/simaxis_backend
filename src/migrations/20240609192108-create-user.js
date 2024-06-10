@@ -21,6 +21,7 @@ module.exports = {
       },
       phone: {
         type: Sequelize.STRING,
+        unique: true,
       },
       role: {
         type: Sequelize.STRING,

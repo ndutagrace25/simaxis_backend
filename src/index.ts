@@ -9,9 +9,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 //routes
-import { user } from "./routes";
+import { customer, user } from "./routes";
 
 app.use("/user", user);
+app.use("/customer", customer);
 
 sequelize
   .sync()

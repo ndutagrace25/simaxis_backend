@@ -1,3 +1,4 @@
 import user from "./user";
+import customer from "./customer";
 
-export { user };
+export { customer, user };

@@ -11,6 +11,9 @@ interface CustomerAttributes {
   lat?: number;
   long?: number;
   plot_number?: string;
+  is_active?: boolean;
+  is_verified?: boolean;
+  is_synced_to_stron?: boolean;
   created_at?: Date;
   updated_at?: Date;
 }
@@ -29,6 +32,9 @@ export class Customer
   public lat?: number;
   public long?: number;
   public plot_number?: string;
+  public is_active?: boolean;
+  public is_verified?: boolean;
+  public is_synced_to_stron?: boolean;
   public created_at?: Date;
   public updated_at?: Date;
 }
@@ -73,6 +79,18 @@ export const CustomerFactory = (sequelize: Sequelize) => {
       long: {
         type: DataTypes.FLOAT,
       },
+      plot_number: {
+        type: DataTypes.STRING,
+      },
+      is_active: {
+        type: DataTypes.BOOLEAN,
+      },
+      is_verified: {
+        type: DataTypes.BOOLEAN,
+      },
+      is_synced_to_stron: {
+        type: DataTypes.BOOLEAN,
+      },
       created_at: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,
@@ -88,4 +106,6 @@ export const CustomerFactory = (sequelize: Sequelize) => {
       tableName: "customers",
     }
   );
+
+  return Customer;
 };

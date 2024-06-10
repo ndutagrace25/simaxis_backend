@@ -1,4 +1,4 @@
-import { User } from "../models";
+import { Customer, User } from "../models";
 
 const getAllUsers = async () => {
   const users = await User.findAll({
@@ -28,7 +28,21 @@ const saveUser = async (userDetails: {
   return user;
 };
 
+const getUserByPhone = async (phone: string) => {
+  const user = await User.findOne({
+    where: { phone },
+    attributes: ["id", "phone", "password"],
+    include: {
+      model: Customer,
+      attributes: ["is_verified", "first_name", "last_name"],
+    },
+  });
+
+  return user;
+};
+
 export = {
   getAllUsers,
+  getUserByPhone,
   saveUser,
 };

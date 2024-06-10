@@ -47,6 +47,7 @@ export const UserFactory = (sequelize: Sequelize) => {
       phone: {
         type: DataTypes.STRING(20),
         allowNull: false,
+        unique: true,
       },
       role: {
         type: DataTypes.STRING(20),

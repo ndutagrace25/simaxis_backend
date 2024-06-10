@@ -10,7 +10,6 @@ const env = process.env.NODE_ENV;
 // @ts-ignore
 const config = require("../config/config")[env];
 
-
 const sequelize = new Sequelize(
   // @ts-ignore
   config.database,
@@ -21,5 +20,9 @@ const sequelize = new Sequelize(
 
 const User = UserFactory(sequelize);
 const Customer = CustomerFactory(sequelize);
+
+// Define associations
+User.hasOne(Customer, { foreignKey: "user_id" });
+Customer.belongsTo(User, { foreignKey: "user_id" });
 
 export { sequelize, Customer, User };
