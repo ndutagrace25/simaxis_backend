@@ -5,8 +5,6 @@ import axios from "axios";
 
 const config = require("../config/config").stron;
 
-console.log(config, "configconfig");
-
 const getCustomers = async (req: Request, res: Response) => {
   try {
     const customers = await customerQueries.getAllCustomers();

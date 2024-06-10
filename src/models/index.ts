@@ -15,7 +15,6 @@ const env = process.env.NODE_ENV;
 // @ts-ignore
 const config = require("../config/config")[env];
 
-console.log(config, "ALL");
 
 const sequelize = new Sequelize(
   // @ts-ignore
