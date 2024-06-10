@@ -3,12 +3,16 @@ import { UserFactory } from "./user";
 
 import { CustomerFactory } from "./customer";
 import dotenv from "dotenv";
+import { MeterTypesFactory } from "./meter_types";
 dotenv.config();
 
 const env = process.env.NODE_ENV;
 
 // @ts-ignore
-const config = require("../config/config").database[env];
+const config = require("../config/config")[env];
+
+
+console.log(config, "ALL");
 
 const sequelize = new Sequelize(
   // @ts-ignore
@@ -20,9 +24,10 @@ const sequelize = new Sequelize(
 
 const User = UserFactory(sequelize);
 const Customer = CustomerFactory(sequelize);
+const MeterTypes = MeterTypesFactory(sequelize);
 
 // Define associations
 User.hasOne(Customer, { foreignKey: "user_id" });
 Customer.belongsTo(User, { foreignKey: "user_id" });
 
-export { sequelize, Customer, User };
+export { sequelize, Customer, MeterTypes, User };

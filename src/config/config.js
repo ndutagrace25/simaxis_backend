@@ -2,31 +2,29 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 module.exports = {
-  database: {
-    development: {
-      username: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
-      host: process.env.DB_HOST,
-      dialect: process.env.DB_DIALECT,
-      logging: false,
-    },
-    test: {
-      username: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
-      host: process.env.DB_HOST,
-      dialect: process.env.DB_DIALECT,
-      logging: false,
-    },
-    production: {
-      username: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
-      host: process.env.DB_HOST,
-      dialect: process.env.DB_DIALECT,
-      logging: false,
-    },
+  development: {
+    username: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    host: process.env.DB_HOST,
+    dialect: "postgres",
+    logging: false,
+  },
+  test: {
+    username: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    host: process.env.DB_HOST,
+    dialect: "postgres",
+    logging: false,
+  },
+  production: {
+    username: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
+    host: process.env.DB_HOST,
+    dialect: process.env.DB_DIALECT,
+    logging: false,
   },
   stron: {
     CompanyName: process.env.STRON_COMPANY_NAME,
