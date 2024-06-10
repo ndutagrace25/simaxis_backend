@@ -76,8 +76,6 @@ const syncCustomerToStron = async (req: Request, res: Response) => {
     // update the customer
     await customerQueries.update(id, { is_synced_to_stron: true });
 
-    console.log(response.data);
-
     return res.status(httpStatus.OK).json({
       statusCode: httpStatus.OK,
       message: "Customer saved to Stron successfully",
