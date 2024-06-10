@@ -24,7 +24,10 @@ const create = async (customerDetails: {
   return customer;
 };
 
-const update = async (id: string, newData: { is_verified: boolean }) => {
+const update = async (
+  id: string,
+  newData: { is_verified?: boolean; is_synced_to_stron?: boolean }
+) => {
   const updatedCustomer = await Customer.update(newData, {
     where: { id },
     returning: true,
@@ -33,8 +36,29 @@ const update = async (id: string, newData: { is_verified: boolean }) => {
   return updatedCustomer;
 };
 
+const getCustomerById = async (id: string) => {
+  const customer = await Customer.findOne({
+    where: { id },
+    attributes: [
+      "id",
+      "first_name",
+      "middle_name",
+      "last_name",
+      "national_id",
+      "location",
+    ],
+    include: {
+      model: User,
+      attributes: ["phone", "email"],
+    },
+  });
+
+  return customer;
+};
+
 export = {
   getAllCustomers,
+  getCustomerById,
   create,
   update,
 };

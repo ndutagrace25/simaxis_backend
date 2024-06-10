@@ -16,6 +16,7 @@ interface CustomerAttributes {
   is_synced_to_stron?: boolean;
   created_at?: Date;
   updated_at?: Date;
+  User?: { dataValues?: { phone: string; email: string } };
 }
 
 export class Customer

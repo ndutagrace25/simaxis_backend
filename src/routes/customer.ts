@@ -6,5 +6,6 @@ const router: Router = express.Router();
 
 router.get("/", verifyToken, customer.getCustomers);
 router.patch("/:id", verifyToken, customer.updateCustomer);
+router.post("/stron", verifyToken, customer.syncCustomerToStron);
 
 export default router;

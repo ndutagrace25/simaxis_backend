@@ -1,6 +1,9 @@
 import httpStatus from "http-status";
 import customerQueries from "../queries/customer";
 import { Request, Response } from "express";
+import axios from "axios";
+
+const config = require("../config/config").stron;
 
 const getCustomers = async (req: Request, res: Response) => {
   try {
@@ -37,4 +40,57 @@ const updateCustomer = async (req: Request, res: Response) => {
   }
 };
 
-export = { getCustomers, updateCustomer };
+const syncCustomerToStron = async (req: Request, res: Response) => {
+  const { id } = req.body;
+
+  try {
+    const customer = await customerQueries.getCustomerById(id);
+
+    if (!customer) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        statusCode: httpStatus.BAD_REQUEST,
+        message: "Customer not found",
+      });
+    }
+
+    const response = await axios.post(`${config.baseUrl}/NewCustomer`, {
+      CompanyName: config.CompanyName,
+      UserName: config.UserName,
+      PassWord: config.PassWord,
+      CustomerID: customer.dataValues.national_id,
+      CustomerAddress: customer.dataValues.location,
+      CustomerPhone: customer?.dataValues?.User?.dataValues?.phone,
+      CustomerEmail: customer?.dataValues?.User?.dataValues?.email,
+    });
+
+    if (
+      response.status === 200 &&
+      response.data === "The current CUST_ID has exist in the system"
+    ) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        statusCode: httpStatus.BAD_REQUEST,
+        message: response.data,
+      });
+    }
+
+    // update the customer
+    await customerQueries.update(id, { is_synced_to_stron: true });
+
+    console.log(response.data);
+
+    return res.status(httpStatus.OK).json({
+      statusCode: httpStatus.OK,
+      message: "Customer saved to Stron successfully",
+      customer,
+      stron_status: response.data,
+    });
+  } catch (error: any) {
+    return res.status(httpStatus.BAD_REQUEST).json({
+      statusCode: httpStatus.BAD_REQUEST,
+      message: error.message,
+      error: error.errors,
+    });
+  }
+};
+
+export = { getCustomers, syncCustomerToStron, updateCustomer };
