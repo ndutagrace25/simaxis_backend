@@ -16,6 +16,9 @@ COPY . .
 # Build the TypeScript code
 RUN npm run build
 
+# Run the postbuild script defined in package.json
+RUN npm run postbuild
+
 # Expose the port your Node.js application is listening on
 EXPOSE 5005
 
