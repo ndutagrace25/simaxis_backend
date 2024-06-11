@@ -1,5 +1,5 @@
 # Use the official Node.js image as the base image
-FROM node:15-alpine AS base
+FROM node:16-alpine AS base
 
 # Set the working directory inside the container
 WORKDIR /app
@@ -20,7 +20,7 @@ RUN npm run build
 RUN cp -r ./src/config ./dist/src
 
 # Expose the port your Node.js application is listening on
-EXPOSE 5005
+EXPOSE 5002
 
 # Start the Node.js application
 CMD ["node", "dist/index.js"]

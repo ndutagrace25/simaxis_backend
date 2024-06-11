@@ -16,7 +16,7 @@ services:
     build: .
     restart: always
     ports:
-      - "5005:5005"
+      - "5002:5002"
     depends_on:
       - postgres
     environment:

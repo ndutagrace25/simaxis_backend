@@ -6,7 +6,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const app: Application = express();
-const PORT = process.env.SI_PORT || 5005;
+const PORT = process.env.SI_PORT || 5002;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
