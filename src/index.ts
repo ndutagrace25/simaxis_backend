@@ -20,7 +20,7 @@ app.use("/customer", customer);
 sequelize
   .sync()
   .then(() => {
-    logging.info("DB CONNECTION", "DB connected successfully");
+    logging.info("DB connected successfully", "");
   })
   .catch((err) => {
     console.error("Unable to connect to the database:", err);
