@@ -16,8 +16,8 @@ COPY . .
 # Build the TypeScript code
 RUN npm run build
 
-# Run the postbuild script defined in package.json
-RUN npm run postbuild
+# Copy the config folder into the dist/src folder
+RUN cp -r ./src/config ./dist/src
 
 # Expose the port your Node.js application is listening on
 EXPOSE 5005
