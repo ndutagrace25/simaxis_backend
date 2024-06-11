@@ -20,9 +20,7 @@ app.use("/customer", customer);
 sequelize
   .sync()
   .then(() => {
-    app.listen(PORT, () => {
-      logging.info("Server running on port " + PORT, "");
-    });
+    logging.info("DB CONNECTION", "DB connected successfully");
   })
   .catch((err) => {
     console.error("Unable to connect to the database:", err);
@@ -40,4 +38,8 @@ app.use((req: Request, res: Response, next: NextFunction) => {
     "POST, GET, OPTIONS, DELETE, PUT,PATCH"
   );
   next();
+});
+
+app.listen(PORT, () => {
+  logging.info("Server running on port " + PORT, "");
 });
