@@ -1,6 +1,9 @@
 import express, { Application, NextFunction, Request, Response } from "express";
 import logging from "npmlog";
 import { sequelize } from "./models";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app: Application = express();
 const PORT = process.env.SI_PORT || 5005;
