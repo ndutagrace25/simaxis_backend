@@ -31,7 +31,7 @@ const saveUser = async (userDetails: {
 const getUserByPhone = async (phone: string) => {
   const user = await User.findOne({
     where: { phone },
-    attributes: ["id", "phone", "password"],
+    attributes: ["id", "phone", "password", "role"],
     include: {
       model: Customer,
       attributes: ["is_verified", "first_name", "last_name"],

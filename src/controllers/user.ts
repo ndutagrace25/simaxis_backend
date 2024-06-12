@@ -15,6 +15,7 @@ interface UserWithCustomer {
   id: string;
   phone: string;
   password: string;
+  role: string;
   Customer?: {
     is_verified: boolean;
     first_name: string;
@@ -45,17 +46,7 @@ const loginUser = async (req: Request, res: Response) => {
       });
     }
 
-    if (userExists?.Customer) {
-      const { is_verified } = userExists?.Customer.dataValues;
-      if (!is_verified) {
-        return res.status(httpStatus.BAD_REQUEST).json({
-          statusCode: httpStatus.BAD_REQUEST,
-          message:
-            "Your account is not yet verified, once verified you will be notified",
-        });
-      }
-    }
-
+ 
     // check the provided password if it matches user's password
     await bcrypt.compare(password, userExists?.password, (err, isValid) => {
       if (isValid) {
@@ -76,6 +67,8 @@ const loginUser = async (req: Request, res: Response) => {
             id: userExists.id,
             first_name: userExists?.Customer?.first_name,
             last_name: userExists?.Customer?.last_name,
+            is_verified: userExists?.Customer?.is_verified,
+            role: userExists.role,
           },
         });
       } else {
@@ -115,6 +108,7 @@ const registerUser = async (req: Request, res: Response) => {
     password,
     phone,
     username,
+    role,
   } = req.body;
 
   const salt = await bcrypt.genSalt(10);
@@ -127,7 +121,7 @@ const registerUser = async (req: Request, res: Response) => {
     email,
     phone: cleanPhone(phone),
     password: hashedPassowd,
-    role: "Tenant",
+    role,
     username,
   };
 
@@ -148,7 +142,12 @@ const registerUser = async (req: Request, res: Response) => {
     const customer = await customerQueries.create(customer_data);
     return res
       .status(httpStatus.OK)
-      .json({ statusCode: httpStatus.OK, user, customer });
+      .json({
+        statusCode: httpStatus.OK,
+        message: "Registration successful, login to proceed",
+        user,
+        customer,
+      });
   } catch (error: any) {
     return res.status(httpStatus.BAD_REQUEST).json({
       statusCode: httpStatus.BAD_REQUEST,
