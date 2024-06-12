@@ -4,6 +4,7 @@ interface MeterTypesttributes {
   id: string;
   name: string;
   description?: string;
+  type?: number;
   created_at?: Date;
   updated_at?: Date;
 }
@@ -15,6 +16,7 @@ export class MeterTypes
   public id!: string;
   public name!: string;
   public description?: string;
+  public type?: number;
   public created_at!: Date;
   public updated_at?: Date;
 }
@@ -34,6 +36,9 @@ export const MeterTypesFactory = (sequelize: Sequelize) => {
       },
       description: {
         type: DataTypes.STRING(255),
+      },
+      type: {
+        type: DataTypes.INTEGER,
       },
       created_at: {
         type: DataTypes.DATE,

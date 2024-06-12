@@ -61,6 +61,8 @@ const syncCustomerToStron = async (req: Request, res: Response) => {
       CustomerAddress: customer.dataValues.location,
       CustomerPhone: customer?.dataValues?.User?.dataValues?.phone,
       CustomerEmail: customer?.dataValues?.User?.dataValues?.email,
+      CustomerName:
+        customer?.dataValues.first_name + " " + customer?.dataValues.last_name,
     });
 
     if (
