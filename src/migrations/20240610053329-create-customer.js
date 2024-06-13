@@ -1,28 +1,28 @@
-'use strict';
+"use strict";
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('customers', {
+    await queryInterface.createTable("customers", {
       id: {
         allowNull: false,
         primaryKey: true,
         type: Sequelize.UUID,
-      },    
+      },
       user_id: {
         type: Sequelize.UUID,
         references: {
           model: "users",
-          key: "id"
+          key: "id",
         },
-        onUpdate: 'CASCADE',
-        onDelete: 'SET NULL',
+        onUpdate: "CASCADE",
+        onDelete: "SET NULL",
       },
       first_name: {
         type: Sequelize.STRING,
         allowNull: false,
       },
       middle_name: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       last_name: {
         type: Sequelize.STRING,
@@ -33,28 +33,43 @@ module.exports = {
         allowNull: false,
       },
       location: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       lat: {
-        type: Sequelize.FLOAT
+        type: Sequelize.FLOAT,
       },
       long: {
-        type: Sequelize.FLOAT
-      },   
+        type: Sequelize.FLOAT,
+      },
       plot_number: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+      },
+      is_active: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+      },
+      is_verified: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+      },
+      is_synced_to_stron: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
       },
       created_at: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       updated_at: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+      },
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('customers');
-  }
+    await queryInterface.dropTable("customers");
+  },
 };
