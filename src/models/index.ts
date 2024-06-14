@@ -15,7 +15,6 @@ const env = process.env.NODE_ENV;
 // @ts-ignore
 const config = require("../config/config")[env];
 
-
 const sequelize = new Sequelize(
   // @ts-ignore
   config.database,
@@ -35,6 +34,8 @@ const Payment = PaymentFactory(sequelize);
 // Define associations
 User.hasOne(Customer, { foreignKey: "user_id" });
 Customer.belongsTo(User, { foreignKey: "user_id" });
+MeterTypes.hasMany(Meter, { foreignKey: "meter_type_id" });
+Meter.belongsTo(MeterTypes, { foreignKey: "meter_type_id" });
 
 export {
   sequelize,

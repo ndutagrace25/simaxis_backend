@@ -3,6 +3,7 @@ import { Customer, User } from "../models";
 const getAllCustomers = async () => {
   const customers = await Customer.findAll({
     include: { model: User, attributes: ["phone", "email"] },
+    order: [["created_at", "DESC"]],
   });
   return customers;
 };
@@ -26,7 +27,11 @@ const create = async (customerDetails: {
 
 const update = async (
   id: string,
-  newData: { is_verified?: boolean; is_synced_to_stron?: boolean }
+  newData: {
+    is_verified?: boolean;
+    is_synced_to_stron?: boolean;
+    is_active?: boolean;
+  }
 ) => {
   const updatedCustomer = await Customer.update(newData, {
     where: { id },
