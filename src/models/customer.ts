@@ -37,7 +37,7 @@ export class Customer
   public is_active?: boolean;
   public is_verified?: boolean;
   public is_synced_to_stron?: boolean;
-  public customer_number?: number;
+  public customer_number!: number;
   public created_at?: Date;
   public updated_at?: Date;
 }
@@ -94,6 +94,11 @@ export const CustomerFactory = (sequelize: Sequelize) => {
       is_synced_to_stron: {
         type: DataTypes.BOOLEAN,
       },
+      customer_number: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        unique: true,
+      },
       created_at: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,
@@ -107,6 +112,12 @@ export const CustomerFactory = (sequelize: Sequelize) => {
       sequelize,
       timestamps: false,
       tableName: "customers",
+      hooks: {
+        beforeCreate: (customer) => {
+          // Custom logic to generate a customer number
+          customer.customer_number = Math.floor(Math.random() * 1000000);
+        },
+      },
     }
   );
 

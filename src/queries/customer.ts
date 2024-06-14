@@ -51,6 +51,7 @@ const getCustomerById = async (id: string) => {
       "last_name",
       "national_id",
       "location",
+      "customer_number"
     ],
     include: {
       model: User,

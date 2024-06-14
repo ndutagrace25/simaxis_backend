@@ -28,7 +28,7 @@ const updateCustomer = async (req: Request, res: Response) => {
     const customer = await customerQueries.update(id, { is_verified });
     return res.status(httpStatus.OK).json({
       statusCode: httpStatus.OK,
-      message: "Customer updated successfully",
+      message: "Customer verified successfully",
       customer,
     });
   } catch (error: any) {
@@ -57,7 +57,7 @@ const syncCustomerToStron = async (req: Request, res: Response) => {
       CompanyName: config.CompanyName,
       UserName: config.UserName,
       PassWord: config.PassWord,
-      CustomerID:`CTS-${customer.dataValues.customer_number}`,
+      CustomerID: `CTS-${customer.dataValues.customer_number}`,
       CustomerAddress: customer.dataValues.location,
       CustomerPhone: customer?.dataValues?.User?.dataValues?.phone,
       CustomerEmail: customer?.dataValues?.User?.dataValues?.email,
@@ -78,13 +78,12 @@ const syncCustomerToStron = async (req: Request, res: Response) => {
     // update the customer
     await customerQueries.update(id, {
       is_synced_to_stron: true,
-      is_verified: true,
       is_active: true,
     });
 
     return res.status(httpStatus.OK).json({
       statusCode: httpStatus.OK,
-      message: "Customer verified and saved to Stron successfully",
+      message: "Customer saved to Stron successfully",
       customer,
       stron_status: response.data,
     });
