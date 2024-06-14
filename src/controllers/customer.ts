@@ -57,7 +57,7 @@ const syncCustomerToStron = async (req: Request, res: Response) => {
       CompanyName: config.CompanyName,
       UserName: config.UserName,
       PassWord: config.PassWord,
-      CustomerID: customer.dataValues.id,
+      CustomerID:`CTS-${customer.dataValues.customer_number}`,
       CustomerAddress: customer.dataValues.location,
       CustomerPhone: customer?.dataValues?.User?.dataValues?.phone,
       CustomerEmail: customer?.dataValues?.User?.dataValues?.email,

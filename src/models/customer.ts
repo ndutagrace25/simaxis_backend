@@ -14,6 +14,7 @@ interface CustomerAttributes {
   is_active?: boolean;
   is_verified?: boolean;
   is_synced_to_stron?: boolean;
+  customer_number?: number;
   created_at?: Date;
   updated_at?: Date;
   User?: { dataValues?: { phone: string; email: string } };
@@ -36,6 +37,7 @@ export class Customer
   public is_active?: boolean;
   public is_verified?: boolean;
   public is_synced_to_stron?: boolean;
+  public customer_number?: number;
   public created_at?: Date;
   public updated_at?: Date;
 }
