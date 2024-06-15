@@ -173,7 +173,7 @@ const registerUser = async (req: Request, res: Response) => {
           landlord_id,
           first_name,
           last_name,
-          phone,
+          phone: cleanPhone(phone),
           email,
           id: uuidv4(),
           user_id,
