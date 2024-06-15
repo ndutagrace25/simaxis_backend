@@ -96,4 +96,20 @@ const syncCustomerToStron = async (req: Request, res: Response) => {
   }
 };
 
-export = { getCustomers, syncCustomerToStron, updateCustomer };
+const getLandlords = async (req: Request, res: Response) => {
+  try {
+    const landlords = await customerQueries.getAllLandlords();
+    return res.status(httpStatus.OK).json({
+      statusCode: httpStatus.OK,
+      landlords,
+    });
+  } catch (error: any) {
+    console.error("Error fetching landlords:", error);
+    return res.status(httpStatus.BAD_REQUEST).json({
+      statusCode: httpStatus.BAD_REQUEST,
+      message: error.message,
+    });
+  }
+};
+
+export = { getCustomers, getLandlords, syncCustomerToStron, updateCustomer };

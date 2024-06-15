@@ -7,6 +7,12 @@ const getAllCustomers = async () => {
   });
   return customers;
 };
+const getAllLandlords = async () => {
+  const landlords = await Customer.findAll({
+    attributes: ["id", "first_name", "last_name", "building_name", "location"],
+  });
+  return landlords;
+};
 
 const create = async (customerDetails: {
   id: string;
@@ -51,7 +57,7 @@ const getCustomerById = async (id: string) => {
       "last_name",
       "national_id",
       "location",
-      "customer_number"
+      "customer_number",
     ],
     include: {
       model: User,
@@ -64,6 +70,7 @@ const getCustomerById = async (id: string) => {
 
 export = {
   getAllCustomers,
+  getAllLandlords,
   getCustomerById,
   create,
   update,

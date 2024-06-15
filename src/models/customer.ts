@@ -15,6 +15,7 @@ interface CustomerAttributes {
   is_verified?: boolean;
   is_synced_to_stron?: boolean;
   customer_number?: number;
+  building_name?: string;
   created_at?: Date;
   updated_at?: Date;
   User?: { dataValues?: { phone: string; email: string } };
@@ -38,6 +39,7 @@ export class Customer
   public is_verified?: boolean;
   public is_synced_to_stron?: boolean;
   public customer_number!: number;
+  public building_name?: string;
   public created_at?: Date;
   public updated_at?: Date;
 }
@@ -74,6 +76,9 @@ export const CustomerFactory = (sequelize: Sequelize) => {
         type: DataTypes.INTEGER,
       },
       location: {
+        type: DataTypes.STRING(50),
+      },
+      building_name: {
         type: DataTypes.STRING(50),
       },
       lat: {
