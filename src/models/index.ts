@@ -8,6 +8,7 @@ import { MeterFactory } from "./meters";
 import { CustomerMeterFactory } from "./customer_meters";
 import { MeterTokenFactory } from "./meter_tokens";
 import { PaymentFactory } from "./payments";
+import { TenantsFactory } from "./tenants";
 dotenv.config();
 
 const env = process.env.NODE_ENV;
@@ -30,6 +31,7 @@ const MeterTypes = MeterTypesFactory(sequelize);
 const Meter = MeterFactory(sequelize);
 const MeterToken = MeterTokenFactory(sequelize);
 const Payment = PaymentFactory(sequelize);
+const Tenants = TenantsFactory(sequelize);
 
 // Define associations
 User.hasOne(Customer, { foreignKey: "user_id" });
@@ -45,5 +47,6 @@ export {
   MeterToken,
   MeterTypes,
   Payment,
+  Tenants,
   User,
 };
