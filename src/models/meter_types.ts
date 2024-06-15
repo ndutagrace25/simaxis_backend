@@ -52,7 +52,7 @@ export const MeterTypesFactory = (sequelize: Sequelize) => {
     {
       sequelize,
       timestamps: false,
-      tableName: "users",
+      tableName: "meter_types",
     }
   );
 
