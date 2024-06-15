@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import { Request, Response } from "express";
 import usersQueries from "../queries/user";
 import customerQueries from "../queries/customer";
+import tenantQueries from "../queries/tenants";
 import { v4 as uuidv4 } from "uuid";
 import { validationResult, ValidationError } from "express-validator";
 import { cleanPhone } from "../utils";
@@ -46,7 +47,6 @@ const loginUser = async (req: Request, res: Response) => {
       });
     }
 
- 
     // check the provided password if it matches user's password
     await bcrypt.compare(password, userExists?.password, (err, isValid) => {
       if (isValid) {
@@ -109,6 +109,7 @@ const registerUser = async (req: Request, res: Response) => {
     phone,
     username,
     role,
+    landlord_id,
   } = req.body;
 
   const salt = await bcrypt.genSalt(10);
@@ -137,17 +138,51 @@ const registerUser = async (req: Request, res: Response) => {
   };
 
   try {
-    const user = await usersQueries.saveUser(user_data);
+    let user;
+    let customer;
 
-    const customer = await customerQueries.create(customer_data);
-    return res
-      .status(httpStatus.OK)
-      .json({
-        statusCode: httpStatus.OK,
-        message: "Registration successful, login to proceed",
-        user,
-        customer,
-      });
+    if (role === "Landlord") {
+      user = await usersQueries.saveUser(user_data);
+      customer = await customerQueries.create(customer_data);
+    }
+
+    if (role === "Tenant") {
+      // save client to tenant table
+      if (!landlord_id) {
+        return res.status(httpStatus.BAD_REQUEST).json({
+          statusCode: httpStatus.BAD_REQUEST,
+          message: "Select your landlord",
+        });
+      }
+
+      const landloard = await customerQueries.getCustomerById(landlord_id);
+
+      if (!landloard) {
+        return res.status(httpStatus.BAD_REQUEST).json({
+          statusCode: httpStatus.BAD_REQUEST,
+          message: "The landlord doesn't exist",
+        });
+      } else {
+        let tenant_data = {
+          landlord_id,
+          first_name,
+          last_name,
+          phone,
+          email,
+          id: uuidv4(),
+          user_id,
+        };
+        user = await usersQueries.saveUser(user_data);
+        customer = await tenantQueries.create(tenant_data);
+      }
+    }
+
+    return res.status(httpStatus.OK).json({
+      statusCode: httpStatus.OK,
+      message: "Registration successful, login to proceed",
+      user,
+      customer,
+    });
   } catch (error: any) {
     return res.status(httpStatus.BAD_REQUEST).json({
       statusCode: httpStatus.BAD_REQUEST,

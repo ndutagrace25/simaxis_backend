@@ -31,7 +31,7 @@ const MeterTypes = MeterTypesFactory(sequelize);
 const Meter = MeterFactory(sequelize);
 const MeterToken = MeterTokenFactory(sequelize);
 const Payment = PaymentFactory(sequelize);
-const Tenants = TenantsFactory(sequelize);
+const Tenant = TenantsFactory(sequelize);
 
 // Define associations
 User.hasOne(Customer, { foreignKey: "user_id" });
@@ -47,6 +47,6 @@ export {
   MeterToken,
   MeterTypes,
   Payment,
-  Tenants,
+  Tenant,
   User,
 };
