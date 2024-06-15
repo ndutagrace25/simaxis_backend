@@ -103,8 +103,6 @@ const syncMeterToStron = async (req: Request, res: Response) => {
       });
     }
 
-    console.log(meter?.dataValues?.MeterType?.dataValues?.type);
-
     const response = await axios.post(`${config.baseUrl}/NewMeter`, {
       CompanyName: config.CompanyName,
       UserName: config.UserName,
