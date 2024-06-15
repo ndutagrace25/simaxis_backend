@@ -12,6 +12,7 @@ const create = async (meterDetails: {
   id: string;
   meter_type_id: string;
   serial_number: number;
+  county_number: number;
 }) => {
   const meter = await Meter.create(meterDetails);
 
@@ -33,28 +34,27 @@ const update = async (
 };
 
 const getMeterById = async (id: string) => {
-  const customer = await Meter.findOne({
+  const meter = await Meter.findOne({
     where: { id },
-    attributes: [
-      "id",
-      "first_name",
-      "middle_name",
-      "last_name",
-      "national_id",
-      "location",
-    ],
-    include: {
-      model: User,
-      attributes: ["phone", "email"],
-    },
+    attributes: ["id", "serial_number"],
   });
 
-  return customer;
+  return meter;
+};
+
+const getMeterBySerialNumber = async (serial_number: number) => {
+  const meter = await Meter.findOne({
+    where: { serial_number },
+    attributes: ["id", "serial_number"],
+  });
+
+  return meter;
 };
 
 export = {
+  create,
   getAllMeters,
   getMeterById,
-  create,
+  getMeterBySerialNumber,
   update,
 };

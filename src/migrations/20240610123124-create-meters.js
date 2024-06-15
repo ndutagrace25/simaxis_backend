@@ -11,6 +11,7 @@ module.exports = {
       serial_number: {
         type: Sequelize.INTEGER,
         allowNull: false,
+        unique: true
       },
       meter_type_id: {
         type: Sequelize.UUID,

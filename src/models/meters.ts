@@ -4,6 +4,7 @@ interface MeterAttributes {
   id: string;
   meter_type_id: string;
   serial_number: number;
+  county_number: number;
   is_synced_to_stron?: boolean;
   created_at?: Date;
   updated_at?: Date;
@@ -13,6 +14,7 @@ export class Meter extends Model<MeterAttributes> implements MeterAttributes {
   public id!: string;
   public meter_type_id!: string;
   public serial_number!: number;
+  public county_number!: number;
   public is_synced_to_stron?: boolean;
   public created_at?: Date;
   public updated_at?: Date;
@@ -38,6 +40,12 @@ export const MeterFactory = (sequelize: Sequelize) => {
       serial_number: {
         type: DataTypes.STRING(50),
         allowNull: false,
+        unique: true,
+      },
+      county_number: {
+        type: DataTypes.STRING(50),
+        allowNull: false,
+        unique: true,
       },
       is_synced_to_stron: {
         type: DataTypes.BOOLEAN,
