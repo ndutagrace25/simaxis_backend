@@ -36,8 +36,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 //routes
-import { customer,meter_types, user } from "./routes";
+import { counties, customer,meter_types, user } from "./routes";
 
+app.use("/counties", counties);
 app.use("/customer", customer);
 app.use("/meter_types", meter_types);
 app.use("/user", user);
