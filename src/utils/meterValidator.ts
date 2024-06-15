@@ -12,6 +12,8 @@ export const saveMeter: ValidationChain[] = [
     .withMessage("Meter number is required")
     .isInt()
     .withMessage("Meter number should be of type number")
+    .isLength({ min: 11, max: 11 })
+    .withMessage("Invalid meter number, meter number has 11 digits")
     .trim(),
   body("county_number")
     .exists()

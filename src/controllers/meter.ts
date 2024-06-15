@@ -43,7 +43,6 @@ const createMeter = async (req: Request, res: Response) => {
     county_number,
   };
 
-
   try {
     const meterExists = await meterQueries.getMeterBySerialNumber(
       serial_number
@@ -67,7 +66,7 @@ const createMeter = async (req: Request, res: Response) => {
     return res.status(httpStatus.BAD_REQUEST).json({
       statusCode: httpStatus.BAD_REQUEST,
       message: error.message,
-      errors: error.errors
+      errors: error.errors,
     });
   }
 };
@@ -100,43 +99,45 @@ const syncMeterToStron = async (req: Request, res: Response) => {
     if (!meter) {
       return res.status(httpStatus.BAD_REQUEST).json({
         statusCode: httpStatus.BAD_REQUEST,
-        message: "Customer not found",
+        message: "Meter not found",
       });
     }
 
-    // const response = await axios.post(`${config.baseUrl}/NewCustomer`, {
-    //   CompanyName: config.CompanyName,
-    //   UserName: config.UserName,
-    //   PassWord: config.PassWord,
-    //   CustomerID: meter.dataValues.id,
-    //   CustomerAddress: meter.dataValues.location,
-    //   CustomerPhone: meter?.dataValues?.User?.dataValues?.phone,
-    //   CustomerEmail: meter?.dataValues?.User?.dataValues?.email,
-    //   CustomerName:
-    //     meter?.dataValues.first_name + " " + meter?.dataValues.last_name,
-    // });
+    console.log(meter?.dataValues?.MeterType?.dataValues?.type);
 
-    // if (
-    //   response.status === 200 &&
-    //   response.data === "The current CUST_ID has exist in the system"
-    // ) {
-    //   return res.status(httpStatus.BAD_REQUEST).json({
-    //     statusCode: httpStatus.BAD_REQUEST,
-    //     message: response.data,
-    //   });
-    // }
+    const response = await axios.post(`${config.baseUrl}/NewMeter`, {
+      CompanyName: config.CompanyName,
+      UserName: config.UserName,
+      PassWord: config.PassWord,
+      MeterID: meter.dataValues.serial_number,
+      MeterType: meter?.dataValues?.MeterType?.dataValues?.type,
+    });
 
-    // update the customer
-    await meterQueries.update(id, {
+    if (
+      response.status === 200 &&
+      (response.data === "Meter ID already exists!" ||
+        response.data === "false")
+    ) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        statusCode: httpStatus.BAD_REQUEST,
+        message:
+          response.data === "false"
+            ? "You are trying to forward an invalid meter number"
+            : response.data,
+      });
+    }
+
+    // update the meter
+    const updatedMeter = await meterQueries.update(id, {
       is_synced_to_stron: true,
     });
 
-    // return res.status(httpStatus.OK).json({
-    //   statusCode: httpStatus.OK,
-    //   message: "Customer verified and saved to Stron successfully",
-    //   customer,
-    //   stron_status: response.data,
-    // });
+    return res.status(httpStatus.OK).json({
+      statusCode: httpStatus.OK,
+      message: "Meter saved to Stron successfully",
+      meter: updatedMeter,
+      stron_status: response.data,
+    });
   } catch (error: any) {
     return res.status(httpStatus.BAD_REQUEST).json({
       statusCode: httpStatus.BAD_REQUEST,

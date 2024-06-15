@@ -2,7 +2,7 @@ import { Meter, MeterTypes, User } from "../models";
 
 const getAllMeters = async () => {
   const meters = await Meter.findAll({
-    include: { model: MeterTypes, attributes: ["name"] },
+    include: { model: MeterTypes, attributes: ["name", "type"] },
     order: [["created_at", "DESC"]],
   });
   return meters;
@@ -37,6 +37,7 @@ const getMeterById = async (id: string) => {
   const meter = await Meter.findOne({
     where: { id },
     attributes: ["id", "serial_number"],
+    include: { model: MeterTypes, attributes: ["name", "type"] },
   });
 
   return meter;

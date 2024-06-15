@@ -9,7 +9,7 @@ module.exports = {
         type: Sequelize.UUID,
       },
       serial_number: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.BIGINT,
         allowNull: false,
         unique: true
       },

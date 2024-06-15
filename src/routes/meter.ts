@@ -6,6 +6,7 @@ import { meterValidator } from "../utils";
 const router: Router = express.Router();
 
 router.get("/", verifyToken, meters.getAllMeters);
-router.post("/", verifyToken, meterValidator.saveMeter,  meters.createMeter);
+router.post("/", verifyToken, meterValidator.saveMeter, meters.createMeter);
+router.post("/stron", verifyToken, meters.syncMeterToStron);
 
 export default router;

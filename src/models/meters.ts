@@ -8,6 +8,7 @@ interface MeterAttributes {
   is_synced_to_stron?: boolean;
   created_at?: Date;
   updated_at?: Date;
+  MeterType?: { dataValues: { name: string; type: number } };
 }
 
 export class Meter extends Model<MeterAttributes> implements MeterAttributes {
@@ -38,7 +39,7 @@ export const MeterFactory = (sequelize: Sequelize) => {
         onDelete: "SET NULL",
       },
       serial_number: {
-        type: DataTypes.STRING(50),
+        type: DataTypes.BIGINT,
         allowNull: false,
         unique: true,
       },
