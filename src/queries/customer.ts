@@ -9,6 +9,7 @@ const getAllCustomers = async () => {
 };
 const getAllLandlords = async () => {
   const landlords = await Customer.findAll({
+    where: { is_verified: true, is_synced_to_stron: true },
     attributes: ["id", "first_name", "last_name", "building_name", "location"],
   });
   return landlords;

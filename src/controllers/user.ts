@@ -103,6 +103,8 @@ const registerUser = async (req: Request, res: Response) => {
     last_name,
     national_id,
     location,
+    lat,
+    long,
     plot_number,
     email,
     password,
@@ -110,7 +112,7 @@ const registerUser = async (req: Request, res: Response) => {
     username,
     role,
     landlord_id,
-    building_name
+    building_name,
   } = req.body;
 
   const salt = await bcrypt.genSalt(10);
@@ -136,7 +138,9 @@ const registerUser = async (req: Request, res: Response) => {
     national_id,
     location,
     plot_number,
-    building_name
+    building_name,
+    lat,
+    long,
   };
 
   try {
