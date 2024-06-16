@@ -119,7 +119,6 @@ export const CustomerFactory = (sequelize: Sequelize) => {
       tableName: "customers",
       hooks: {
         beforeCreate: (customer) => {
-          // Custom logic to generate a customer number
           customer.customer_number = Math.floor(Math.random() * 1000000);
         },
       },

@@ -34,12 +34,24 @@ const Payment = PaymentFactory(sequelize);
 const Tenant = TenantsFactory(sequelize);
 
 // Define associations
+// CUSTOMERS AND USERS
 User.hasOne(Customer, { foreignKey: "user_id" });
 Customer.belongsTo(User, { foreignKey: "user_id" });
+// METER TYPES AND METERS
 MeterTypes.hasMany(Meter, { foreignKey: "meter_type_id" });
 Meter.belongsTo(MeterTypes, { foreignKey: "meter_type_id" });
+// TENANT AND CUSTOMERS/LANDLORD
 Customer.hasMany(Tenant, { foreignKey: "landlord_id" });
 Tenant.belongsTo(Customer, { foreignKey: "landlord_id" });
+// CUSTOMER/LANDLORD METERS AND CUSTOMERS
+Customer.hasMany(CustomerMeter, { foreignKey: "customer_id" });
+CustomerMeter.belongsTo(Customer, {foreignKey: "customer_id"});
+// CUSTOMER METERS AND METERS
+Meter.hasOne(CustomerMeter, { foreignKey: "meter_id" });
+CustomerMeter.belongsTo(Meter, {foreignKey: "meter_id"});
+// CUSTOMER METERS AND TENANTS
+Tenant.hasOne(CustomerMeter, { foreignKey: "tenant_id" });
+CustomerMeter.belongsTo(Tenant, {foreignKey: "tenant_id"});
 
 export {
   sequelize,

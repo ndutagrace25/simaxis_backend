@@ -39,6 +39,7 @@ app.use(express.urlencoded({ extended: false }));
 import {
   counties,
   customer,
+  customer_meters,
   landlord,
   meter,
   meter_types,
@@ -48,6 +49,7 @@ import {
 
 app.use("/counties", counties);
 app.use("/customer", customer);
+app.use("/customer-meter", customer_meters);
 app.use("/landlord", landlord);
 app.use("/meter", meter);
 app.use("/meter_types", meter_types);

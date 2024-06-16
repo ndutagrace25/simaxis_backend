@@ -1,7 +1,9 @@
 import httpStatus from "http-status";
 import customerQueries from "../queries/customer";
+import customerMeterQueries from "../queries/customer_meters";
 import { Request, Response } from "express";
 import axios from "axios";
+import { v4 as uuidv4 } from "uuid";
 
 const config = require("../config/config").stron;
 
@@ -112,4 +114,44 @@ const getLandlords = async (req: Request, res: Response) => {
   }
 };
 
-export = { getCustomers, getLandlords, syncCustomerToStron, updateCustomer };
+const attachMeterToCustomer = async (req: Request, res: Response) => {
+  const { meter_id, customer_id } = req.body;
+  try {
+    //get customer meter by meter_id
+    const meterAttached = await customerMeterQueries.getCustomerMeterByMeterId(
+      meter_id
+    );
+
+    if (meterAttached) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        statusCode: httpStatus.BAD_REQUEST,
+        message: "The meter number is already attached to an agent/landlord",
+      });
+    }
+
+    const customer_meter = await customerMeterQueries.create({
+      id: uuidv4(),
+      meter_id,
+      customer_id,
+    });
+    return res.status(httpStatus.OK).json({
+      statusCode: httpStatus.OK,
+      message: "Meter attached successfully",
+      customer_meter,
+    });
+  } catch (error: any) {
+    console.error("Error attaching meter to customer:", error);
+    return res.status(httpStatus.BAD_REQUEST).json({
+      statusCode: httpStatus.BAD_REQUEST,
+      message: error.message,
+    });
+  }
+};
+
+export = {
+  attachMeterToCustomer,
+  getCustomers,
+  getLandlords,
+  syncCustomerToStron,
+  updateCustomer,
+};

@@ -145,4 +145,26 @@ const syncMeterToStron = async (req: Request, res: Response) => {
   }
 };
 
-export = { createMeter, getAllMeters, syncMeterToStron, updateMeter };
+const getSyncedAndAttachedMeters = async (req: Request, res: Response) => {
+  try {
+    const synced_meters = await meterQueries.getSyncedMeters();
+    return res.status(httpStatus.OK).json({
+      statusCode: httpStatus.OK,
+      synced_meters,
+    });
+  } catch (error: any) {
+    console.error("Error fetching synced_meters:", error);
+    return res.status(httpStatus.BAD_REQUEST).json({
+      statusCode: httpStatus.BAD_REQUEST,
+      message: error.message,
+    });
+  }
+};
+
+export = {
+  createMeter,
+  getAllMeters,
+  getSyncedAndAttachedMeters,
+  syncMeterToStron,
+  updateMeter,
+};

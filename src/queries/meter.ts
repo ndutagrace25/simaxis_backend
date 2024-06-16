@@ -1,4 +1,4 @@
-import { Meter, MeterTypes, User } from "../models";
+import { CustomerMeter, Meter, MeterTypes, User } from "../models";
 
 const getAllMeters = async () => {
   const meters = await Meter.findAll({
@@ -52,10 +52,20 @@ const getMeterBySerialNumber = async (serial_number: number) => {
   return meter;
 };
 
+const getSyncedMeters = async () => {
+  const synced_meters = await Meter.findAll({
+    where: { is_synced_to_stron: true },
+    attributes: ["id", "serial_number"],
+    include: [{ model: CustomerMeter, attributes: ["id", "meter_id"] }],
+  });
+  return synced_meters;
+};
+
 export = {
   create,
   getAllMeters,
   getMeterById,
   getMeterBySerialNumber,
+  getSyncedMeters,
   update,
 };
