@@ -1,4 +1,4 @@
-import { Tenant } from "../models";
+import { Customer, Tenant } from "../models";
 
 const getAllTenants = async () => {
   const tenants = await Tenant.findAll({
@@ -11,6 +11,11 @@ const getAllTenants = async () => {
       "created_at",
       "updated_at",
     ],
+    include: {
+      model: Customer,
+      attributes: ["first_name", "middle_name", "last_name", "building_name"],
+    },
+    order: [["created_at", "DESC"]],
   });
   return tenants;
 };

@@ -38,6 +38,8 @@ User.hasOne(Customer, { foreignKey: "user_id" });
 Customer.belongsTo(User, { foreignKey: "user_id" });
 MeterTypes.hasMany(Meter, { foreignKey: "meter_type_id" });
 Meter.belongsTo(MeterTypes, { foreignKey: "meter_type_id" });
+Customer.hasMany(Tenant, { foreignKey: "landlord_id" });
+Tenant.belongsTo(Customer, { foreignKey: "landlord_id" });
 
 export {
   sequelize,
