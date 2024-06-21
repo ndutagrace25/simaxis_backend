@@ -8,5 +8,6 @@ router.get("/", verifyToken, customer.getCustomers);
 router.patch("/:id", verifyToken, customer.updateCustomer);
 router.post("/stron", verifyToken, customer.syncCustomerToStron);
 router.post("/attach/meter", verifyToken, customer.attachMeterToCustomer);
+router.get("/landlord/tenants/:landlord_id", verifyToken, customer.getLandlordTenants);
 
 export default router;

@@ -1,4 +1,4 @@
-import { Customer, User } from "../models";
+import { Customer, Tenant, User } from "../models";
 
 const getAllCustomers = async () => {
   const customers = await Customer.findAll({
@@ -69,10 +69,19 @@ const getCustomerById = async (id: string) => {
   return customer;
 };
 
+const getLandlordTenants = async (landlord_id: string) => {
+  const landlord_tenants = await Tenant.findAll({
+    where: { landlord_id },
+    attributes: ["id", "first_name", "last_name"],
+  });
+  return landlord_tenants;
+};
+
 export = {
   getAllCustomers,
   getAllLandlords,
   getCustomerById,
+  getLandlordTenants,
   create,
   update,
 };

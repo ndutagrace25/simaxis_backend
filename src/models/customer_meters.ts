@@ -4,6 +4,7 @@ interface CustomerMeterAttributes {
   id: string;
   customer_id: string;
   meter_id: string;
+  tenant_id?: string;
   is_synced_to_stron?: boolean;
   account_id?: number;
   created_at?: Date;

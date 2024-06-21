@@ -52,6 +52,9 @@ CustomerMeter.belongsTo(Meter, {foreignKey: "meter_id"});
 // CUSTOMER METERS AND TENANTS
 Tenant.hasOne(CustomerMeter, { foreignKey: "tenant_id" });
 CustomerMeter.belongsTo(Tenant, {foreignKey: "tenant_id"});
+// CUSTOMERS METERS AND METER TOKENS
+Meter.hasMany(MeterToken, {foreignKey: "meter_id"});
+MeterToken.belongsTo(Meter, {foreignKey: "meter_id"})
 
 export {
   sequelize,

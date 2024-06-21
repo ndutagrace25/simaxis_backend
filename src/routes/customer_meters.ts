@@ -6,5 +6,15 @@ const router: Router = express.Router();
 
 router.get("/", verifyToken, customer_meters.getCustomerMeters);
 router.post("/stron", verifyToken, customer_meters.syncCustomerAccountToStron);
+router.get(
+  "/landlord/:id",
+  verifyToken,
+  customer_meters.getCustomerMetersPerLandlord
+);
+router.get(
+  "/landlord/tenant/:id",
+  verifyToken,
+  customer_meters.getCustomerMetersPerTenant
+);
 
 export default router;

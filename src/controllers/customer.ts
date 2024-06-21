@@ -148,10 +148,30 @@ const attachMeterToCustomer = async (req: Request, res: Response) => {
   }
 };
 
+const getLandlordTenants = async (req: Request, res: Response) => {
+  const { landlord_id } = req.params;
+  try {
+    const landlord_tenants = await customerQueries.getLandlordTenants(
+      landlord_id
+    );
+    return res.status(httpStatus.OK).json({
+      statusCode: httpStatus.OK,
+      landlord_tenants,
+    });
+  } catch (error: any) {
+    console.error("Error fetching landlord_tenants:", error);
+    return res.status(httpStatus.BAD_REQUEST).json({
+      statusCode: httpStatus.BAD_REQUEST,
+      message: error.message,
+    });
+  }
+};
+
 export = {
   attachMeterToCustomer,
   getCustomers,
   getLandlords,
+  getLandlordTenants,
   syncCustomerToStron,
   updateCustomer,
 };

@@ -1,4 +1,12 @@
-import { Customer, CustomerMeter, Meter, Tenant } from "../models";
+import { Op, Sequelize } from "sequelize";
+import {
+  Customer,
+  CustomerMeter,
+  Meter,
+  MeterToken,
+  sequelize,
+  Tenant,
+} from "../models";
 
 const getAllCustomerMeters = async () => {
   const customer_meters = await CustomerMeter.findAll({
@@ -33,6 +41,58 @@ const getCustomerMeterById = async (id: string) => {
   const meter = await CustomerMeter.findOne({ where: { id } });
   return meter;
 };
+const getCustomerMeterByLandlordId = async (
+  customer_id: string,
+  serial_number?: string | undefined
+) => {
+  const meterWhere = serial_number ? { serial_number } : {};
+  const landlord_meters = await CustomerMeter.findAll({
+    where: { customer_id },
+    include: [
+      {
+        model: Tenant,
+        attributes: ["first_name", "last_name"],
+      },
+      {
+        model: Meter,
+        where: meterWhere,
+        attributes: ["serial_number", "county_number", "is_synced_to_stron"],
+        include: [
+          {
+            model: MeterToken,
+            attributes: ["token", "created_at", "amount"],
+            order: [["created_at", "DESC"]],
+          },
+        ],
+      },
+    ],
+  });
+  return landlord_meters;
+};
+
+const getCustomerMeterByTenantId = async (tenant_id: string) => {
+  const tenant_meters = await CustomerMeter.findOne({
+    where: { tenant_id },
+    include: [
+      {
+        model: Tenant,
+        attributes: ["first_name", "last_name"],
+      },
+      {
+        model: Meter,
+        attributes: ["serial_number", "county_number", "is_synced_to_stron"],
+        include: [
+          {
+            model: MeterToken,
+            attributes: ["token", "created_at", "amount"],
+            order: [["created_at", "DESC"]],
+          },
+        ],
+      },
+    ],
+  });
+  return tenant_meters;
+};
 
 const create = async (customerMeterDetails: {
   meter_id: string;
@@ -63,5 +123,7 @@ export = {
   getAllCustomerMeters,
   getCustomerMeterByMeterId,
   getCustomerMeterById,
+  getCustomerMeterByLandlordId,
+  getCustomerMeterByTenantId,
   update,
 };

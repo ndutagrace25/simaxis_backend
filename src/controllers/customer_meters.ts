@@ -81,4 +81,50 @@ const syncCustomerAccountToStron = async (req: Request, res: Response) => {
   }
 };
 
-export = { getCustomerMeters, syncCustomerAccountToStron };
+const getCustomerMetersPerLandlord = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const serial_number: any = req.query?.serial_number;
+
+  try {
+    const landlord_meters =
+      await customerMetersQueries.getCustomerMeterByLandlordId(
+        id,
+        serial_number
+      );
+    return res.status(httpStatus.OK).json({
+      statusCode: httpStatus.OK,
+      landlord_meters,
+    });
+  } catch (error: any) {
+    console.error("Error fetching landlord_meters:", error);
+    return res.status(httpStatus.BAD_REQUEST).json({
+      statusCode: httpStatus.BAD_REQUEST,
+      message: error.message,
+    });
+  }
+};
+const getCustomerMetersPerTenant = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  try {
+    const tenant_meter = await customerMetersQueries.getCustomerMeterByTenantId(
+      id
+    );
+    return res.status(httpStatus.OK).json({
+      statusCode: httpStatus.OK,
+      tenant_meter,
+    });
+  } catch (error: any) {
+    console.error("Error fetching tenant_meters:", error);
+    return res.status(httpStatus.BAD_REQUEST).json({
+      statusCode: httpStatus.BAD_REQUEST,
+      message: error.message,
+    });
+  }
+};
+
+export = {
+  getCustomerMeters,
+  syncCustomerAccountToStron,
+  getCustomerMetersPerLandlord,
+  getCustomerMetersPerTenant,
+};
