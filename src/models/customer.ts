@@ -18,7 +18,7 @@ interface CustomerAttributes {
   building_name?: string;
   created_at?: Date;
   updated_at?: Date;
-  User?: { dataValues?: { phone: string; email: string } };
+  User?: { dataValues?: { phone: string; email: string; id: string } };
 }
 
 export class Customer

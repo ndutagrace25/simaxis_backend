@@ -1,4 +1,4 @@
-import { Customer, User } from "../models";
+import { Customer, Tenant, User } from "../models";
 
 const getAllUsers = async () => {
   const users = await User.findAll({
@@ -32,10 +32,16 @@ const getUserByPhone = async (phone: string) => {
   const user = await User.findOne({
     where: { phone },
     attributes: ["id", "phone", "password", "role"],
-    include: {
-      model: Customer,
-      attributes: ["is_verified", "first_name", "last_name"],
-    },
+    include: [
+      {
+        model: Customer,
+        attributes: ["id", "is_verified", "first_name", "last_name"],
+      },
+      {
+        model: Tenant,
+        attributes: ["id", "first_name", "last_name"],
+      },
+    ],
   });
 
   return user;

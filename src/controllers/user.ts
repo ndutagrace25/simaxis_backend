@@ -23,6 +23,12 @@ interface UserWithCustomer {
     last_name: string;
     dataValues: any;
   };
+  Tenant?: {
+    id: string;
+    first_name: string;
+    last_name: string;
+    dataValues: any;
+  };
 }
 
 const loginUser = async (req: Request, res: Response) => {
@@ -52,7 +58,10 @@ const loginUser = async (req: Request, res: Response) => {
       if (isValid) {
         const jwt_secret: any = process.env.JWT_SECRET;
 
-        const data = userExists?.Customer?.dataValues;
+        const data =
+          userExists.role === "Tenant"
+            ? userExists?.Tenant?.dataValues
+            : userExists?.Customer?.dataValues;
 
         // create access token on login
         let token = jwt.sign(data, jwt_secret, {
@@ -65,10 +74,23 @@ const loginUser = async (req: Request, res: Response) => {
           token,
           user: {
             id: userExists.id,
-            first_name: userExists?.Customer?.first_name,
-            last_name: userExists?.Customer?.last_name,
-            is_verified: userExists?.Customer?.is_verified,
+            first_name:
+              userExists.role === "Tenant"
+                ? userExists?.Tenant?.dataValues?.first_name
+                : userExists?.Customer?.first_name,
+            last_name:
+              userExists.role === "Tenant"
+                ? userExists?.Tenant?.dataValues?.last_name
+                : userExists?.Customer?.last_name,
+            is_verified:
+              userExists.role === "Tenant"
+                ? true
+                : userExists?.Customer?.is_verified,
             role: userExists.role,
+            customer_id:
+              userExists.role === "Tenant"
+                ? userExists?.Tenant?.dataValues?.id
+                : userExists?.Customer?.dataValues?.id,
           },
         });
       } else {
