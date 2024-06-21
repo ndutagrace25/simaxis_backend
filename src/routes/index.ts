@@ -1,3 +1,4 @@
+import callback from "./callback";
 import counties from "./counties";
 import customer from "./customer";
 import customer_meters from "./customer_meters";
@@ -8,6 +9,7 @@ import tenant from "./tenant";
 import user from "./user";
 
 export {
+  callback,
   counties,
   customer,
   customer_meters,

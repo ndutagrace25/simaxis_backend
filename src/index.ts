@@ -37,6 +37,7 @@ app.use(express.urlencoded({ extended: false }));
 
 //routes
 import {
+  callback,
   counties,
   customer,
   customer_meters,
@@ -47,6 +48,7 @@ import {
   user,
 } from "./routes";
 
+app.use("/callback", callback);
 app.use("/counties", counties);
 app.use("/customer", customer);
 app.use("/customer-meter", customer_meters);
