@@ -3,7 +3,7 @@ import meterQueries from "../queries/meter";
 import { Request, Response } from "express";
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
-import { validationResult, ValidationError } from "express-validator";
+import { validationResult } from "express-validator";
 
 const config = require("../config/config").stron;
 

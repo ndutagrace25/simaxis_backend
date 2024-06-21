@@ -5,7 +5,12 @@ const getAllCustomerMeters = async () => {
     include: [
       {
         model: Customer,
-        attributes: ["first_name", "middle_name", "last_name"],
+        attributes: [
+          "first_name",
+          "middle_name",
+          "last_name",
+          "customer_number",
+        ],
       },
       {
         model: Tenant,
@@ -13,7 +18,7 @@ const getAllCustomerMeters = async () => {
       },
       {
         model: Meter,
-        attributes: ["serial_number", "county_number"],
+        attributes: ["serial_number", "county_number", "is_synced_to_stron"],
       },
     ],
   });
@@ -22,6 +27,10 @@ const getAllCustomerMeters = async () => {
 
 const getCustomerMeterByMeterId = async (meter_id: string) => {
   const meter = await CustomerMeter.findOne({ where: { meter_id } });
+  return meter;
+};
+const getCustomerMeterById = async (id: string) => {
+  const meter = await CustomerMeter.findOne({ where: { id } });
   return meter;
 };
 
@@ -35,8 +44,24 @@ const create = async (customerMeterDetails: {
   return customer_meter;
 };
 
+const update = async (
+  id: string,
+  newData: {
+    is_synced_to_stron?: boolean;
+  }
+) => {
+  const updatedCustomerMeter = await CustomerMeter.update(newData, {
+    where: { id },
+    returning: true,
+  });
+
+  return updatedCustomerMeter;
+};
+
 export = {
   create,
   getAllCustomerMeters,
   getCustomerMeterByMeterId,
+  getCustomerMeterById,
+  update,
 };
