@@ -103,6 +103,7 @@ const getCustomerMetersPerLandlord = async (req: Request, res: Response) => {
     });
   }
 };
+
 const getCustomerMetersPerTenant = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
@@ -122,9 +123,30 @@ const getCustomerMetersPerTenant = async (req: Request, res: Response) => {
   }
 };
 
+const updateCustomerMeter = async (req: Request, res: Response) => {
+  const { tenant_id } = req.body;
+  const { id } = req.params;
+  try {
+    const updatedCustomerMeter = await customerMetersQueries.update(id, {
+      tenant_id,
+    });
+    return res.status(httpStatus.OK).json({
+      statusCode: httpStatus.OK,
+      message: "Customer meter updated successfully",
+      customer_meter: updatedCustomerMeter,
+    });
+  } catch (error: any) {
+    return res.status(httpStatus.BAD_REQUEST).json({
+      statusCode: httpStatus.BAD_REQUEST,
+      message: error.message,
+    });
+  }
+};
+
 export = {
   getCustomerMeters,
   syncCustomerAccountToStron,
   getCustomerMetersPerLandlord,
   getCustomerMetersPerTenant,
+  updateCustomerMeter,
 };

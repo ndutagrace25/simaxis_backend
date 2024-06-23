@@ -108,6 +108,7 @@ const update = async (
   id: string,
   newData: {
     is_synced_to_stron?: boolean;
+    tenant_id?: string;
   }
 ) => {
   const updatedCustomerMeter = await CustomerMeter.update(newData, {
