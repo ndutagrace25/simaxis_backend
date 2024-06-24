@@ -87,6 +87,7 @@ const loginUser = async (req: Request, res: Response) => {
                 ? true
                 : userExists?.Customer?.is_verified,
             role: userExists.role,
+            phone: userExists.phone,
             customer_id:
               userExists.role === "Tenant"
                 ? userExists?.Tenant?.dataValues?.id
