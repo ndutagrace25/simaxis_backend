@@ -9,6 +9,7 @@ interface MeterTokensAttributes {
   token_type?: string;
   created_at?: Date;
   updated_at?: Date;
+  total_units?: number;
 }
 
 export class MeterToken
@@ -21,6 +22,7 @@ export class MeterToken
   public issue_date?: Date;
   public amount!: number;
   public token_type?: string;
+  public total_units?: number;
   public created_at?: Date;
   public updated_at?: Date;
 }
@@ -53,6 +55,9 @@ export const MeterTokenFactory = (sequelize: Sequelize) => {
       amount: {
         type: DataTypes.FLOAT,
         allowNull: false,
+      },
+      total_units: {
+        type: DataTypes.FLOAT,
       },
       token_type: {
         type: DataTypes.STRING,

@@ -1,6 +1,6 @@
 import { Model, DataTypes, Sequelize } from "sequelize";
 
-interface PaymentAttributes {
+export interface PaymentAttributes {
   id: string;
   customer_id: string;
   meter_id: string;
@@ -10,6 +10,8 @@ interface PaymentAttributes {
   payment_code?: string;
   created_at?: Date;
   updated_at?: Date;
+  phone_number?: string;
+  meter_number?: string;
 }
 
 export class Payments
@@ -23,6 +25,8 @@ export class Payments
   public amount!: number;
   public payment_method?: string;
   public payment_code?: string;
+  public meter_number?: string;
+  public phone_number?: string;
   public created_at?: Date;
   public updated_at?: Date;
 }
@@ -63,6 +67,12 @@ export const PaymentFactory = (sequelize: Sequelize) => {
         allowNull: false,
       },
       payment_method: {
+        type: DataTypes.STRING,
+      },
+      phone_number: {
+        type: DataTypes.STRING,
+      },
+      meter_number: {
         type: DataTypes.STRING,
       },
       payment_code: {

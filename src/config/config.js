@@ -44,4 +44,10 @@ module.exports = {
     PassWord: process.env.STRON_PASSWORD,
     baseUrl: process.env.STRON_BASE_URL,
   },
+  sms: {
+    apikey: process.env.SMS_API_KEY,
+    partnerID: process.env.SMS_PARTNER_ID,
+    shortcode: process.env.SMS_SHORT_CODE,
+    baseUrl: process.env.SMS_URL,
+  },
 };
