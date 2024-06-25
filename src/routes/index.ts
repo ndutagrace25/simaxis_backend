@@ -5,6 +5,7 @@ import customer_meters from "./customer_meters";
 import landlord from "./landlords";
 import meter from "./meter";
 import meter_types from "./meter_types";
+import payments from "./payments"
 import tenant from "./tenant";
 import user from "./user";
 
@@ -16,6 +17,7 @@ export {
   landlord,
   meter,
   meter_types,
+  payments,
   tenant,
   user,
 };
