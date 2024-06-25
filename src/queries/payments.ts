@@ -23,7 +23,15 @@ const create = async (paymentDetails: {
   return meter;
 };
 
+const getPaymentByMpesaCode = async (payment_code: string) => {
+  const payment = await Payment.findOne({
+    where: { payment_code },
+  });
+
+  return payment;
+};
 export = {
   create,
   getAllPayments,
+  getPaymentByMpesaCode,
 };

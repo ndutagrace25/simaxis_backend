@@ -80,50 +80,55 @@ const paymentCallback = async (req: Request, res: Response) => {
       meter_id,
     };
     try {
-      const paymentSaved = await paymentsQueries.create(data);
+      let paymentSaved: any;
+      let stronToken: any;
+      const paymentCodeExists = await paymentsQueries.getPaymentByMpesaCode(
+        mpesaCode?.Value
+      );
+      console.log(paymentCodeExists?.payment_code, "getting here 1");
 
-      // generate token
-      const stronToken = await axios.post(
-        `${stron_config.baseUrl}/VendingMeter`,
-        {
+      if (!paymentCodeExists?.payment_code) {
+        console.log(paymentCodeExists?.payment_code, "getting here");
+        paymentSaved = await paymentsQueries.create(data);
+        stronToken = await axios.post(`${stron_config.baseUrl}/VendingMeter`, {
           CompanyName: stron_config.CompanyName,
           UserName: stron_config.UserName,
           PassWord: stron_config.PassWord,
           MeterId: meter_number,
           is_vend_by_unit: "false",
           Amount: amount?.Value,
-        }
-      );
-
-      if (stronToken?.data?.length > 0) {
-        let token = stronToken?.data[0];
-        // save token
-        let tokenData: any = {
-          token: token?.Token,
-          meter_id,
-          issue_date: new Date(),
-          amount: amount?.Value,
-          token_type: "Energy Meter",
-          total_units: token?.Total_unit,
-          id: uuidv4(),
-        };
-
-        await tokensQueries.create(tokenData);
-
-        // send sms
-        await axios.post(`${sms_config?.baseUrl}`, {
-          apikey: sms_config?.apikey,
-          partnerID: sms_config?.partnerID,
-          mobile: `+${phone_number?.Value}`,
-          message: `Mtr:${meter_number}
-          Token:${token?.Token}
-          Date:${moment(new Date()).format("YYYYMMDD HH:mm")}
-          Units:${token?.Total_unit}
-          Amt:${amount?.Value}`,
-          shortcode: "SI-MAXIS",
         });
+
+        if (stronToken?.data?.length > 0) {
+          let token = stronToken?.data[0];
+          // save token
+          let tokenData: any = {
+            token: token?.Token,
+            meter_id,
+            issue_date: new Date(),
+            amount: amount?.Value,
+            token_type: "Energy Meter",
+            total_units: token?.Total_unit,
+            id: uuidv4(),
+          };
+
+          await tokensQueries.create(tokenData);
+
+          // send sms
+          await axios.post(`${sms_config?.baseUrl}`, {
+            apikey: sms_config?.apikey,
+            partnerID: sms_config?.partnerID,
+            mobile: `+${phone_number?.Value}`,
+            message: `Mtr:${meter_number}
+            Token:${token?.Token}
+            Date:${moment(new Date()).format("YYYYMMDD HH:mm")}
+            Units:${token?.Total_unit}
+            Amt:${amount?.Value}`,
+            shortcode: "SI-MAXIS",
+          });
+        }
       }
-      // save token
+
       // [
       //   {
       //     Company_name: "SI-MAXIS",
@@ -152,7 +157,7 @@ const paymentCallback = async (req: Request, res: Response) => {
         stronToken,
       });
     } catch (error: any) {
-      console.log(error.message, "2");
+      console.log(error.message, error.response, "2");
       return res.status(httpStatus.BAD_REQUEST).json({
         statusCode: httpStatus.BAD_REQUEST,
         message: error.message,
