@@ -95,8 +95,6 @@ const paymentCallback = async (req: Request, res: Response) => {
         }
       );
 
-      console.log(stronToken, "stronToken");
-
       if (stronToken?.data?.length > 0) {
         let token = stronToken?.data[0];
         // save token
@@ -109,8 +107,6 @@ const paymentCallback = async (req: Request, res: Response) => {
           total_units: token?.Total_unit,
           id: uuidv4(),
         };
-
-        console.log(tokenData, "tokenData");
 
         await tokensQueries.create(tokenData);
 

@@ -61,7 +61,7 @@ const getCustomerMeterByLandlordId = async (
           {
             model: MeterToken,
             attributes: ["token", "created_at", "amount"],
-            order: [["created_at", "DESC"]],
+            order: [["created_at", "ASC"]],
           },
         ],
       },
