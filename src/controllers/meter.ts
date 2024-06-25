@@ -181,17 +181,26 @@ const clearMeterTamper = async (req: Request, res: Response) => {
       METER_ID: meter.dataValues.serial_number,
     });
 
-    // update the meter
-    const updatedMeter = await meterQueries.update(id, {
-      tamper_value: response.data,
-    });
+    if (response.data === "false01") {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        statusCode: httpStatus.BAD_REQUEST,
+        message:
+          "Meter tamper not cleared, ensure the meter exists in stron system",
+        stron_status: response.data,
+      });
+    } else {
+      // update the meter
+      const updatedMeter = await meterQueries.update(id, {
+        tamper_value: response.data,
+      });
 
-    return res.status(httpStatus.OK).json({
-      statusCode: httpStatus.OK,
-      message: "Meter tamper cleared successfully",
-      meter: updatedMeter,
-      stron_status: response.data,
-    });
+      return res.status(httpStatus.OK).json({
+        statusCode: httpStatus.OK,
+        message: "Meter tamper cleared successfully",
+        meter: updatedMeter,
+        stron_status: response.data,
+      });
+    }
   } catch (error: any) {
     return res.status(httpStatus.BAD_REQUEST).json({
       statusCode: httpStatus.BAD_REQUEST,
