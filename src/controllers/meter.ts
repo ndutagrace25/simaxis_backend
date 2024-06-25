@@ -161,8 +161,49 @@ const getSyncedAndAttachedMeters = async (req: Request, res: Response) => {
   }
 };
 
+const clearMeterTamper = async (req: Request, res: Response) => {
+  const { id } = req.body;
+
+  try {
+    const meter = await meterQueries.getMeterById(id);
+
+    if (!meter) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        statusCode: httpStatus.BAD_REQUEST,
+        message: "Meter not found",
+      });
+    }
+
+    const response = await axios.post(`${config.baseUrl}/ClearTamperDirectly`, {
+      CompanyName: config.CompanyName,
+      UserName: config.UserName,
+      PassWord: config.PassWord,
+      METER_ID: meter.dataValues.serial_number,
+    });
+
+    // update the meter
+    const updatedMeter = await meterQueries.update(id, {
+      tamper_value: response.data,
+    });
+
+    return res.status(httpStatus.OK).json({
+      statusCode: httpStatus.OK,
+      message: "Meter tamper cleared successfully",
+      meter: updatedMeter,
+      stron_status: response.data,
+    });
+  } catch (error: any) {
+    return res.status(httpStatus.BAD_REQUEST).json({
+      statusCode: httpStatus.BAD_REQUEST,
+      message: error.message,
+      error: error.errors,
+    });
+  }
+};
+
 export = {
   createMeter,
+  clearMeterTamper,
   getAllMeters,
   getSyncedAndAttachedMeters,
   syncMeterToStron,

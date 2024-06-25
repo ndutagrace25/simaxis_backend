@@ -9,5 +9,6 @@ router.get("/", verifyToken, meters.getAllMeters);
 router.post("/", verifyToken, meterValidator.saveMeter, meters.createMeter);
 router.post("/stron", verifyToken, meters.syncMeterToStron);
 router.get("/synced/customer", verifyToken, meters.getSyncedAndAttachedMeters);
+router.post("/clear/tamper", verifyToken, meters.clearMeterTamper);
 
 export default router;
