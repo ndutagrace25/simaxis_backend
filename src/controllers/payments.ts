@@ -120,10 +120,10 @@ const paymentCallback = async (req: Request, res: Response) => {
           partnerID: sms_config?.partnerID,
           mobile: `+${phone_number?.Value}`,
           message: `Mtr:${meter_number}
-                    Token:${token?.Token}
-                    Date:${moment(new Date()).format("YYYYMMDD HH:mm")}
-                    Units:${token?.Total_unit}
-                    Amt:${amount?.Value}`,
+          Token:${token?.Token}
+          Date:${moment(new Date()).format("YYYYMMDD HH:mm")}
+          Units:${token?.Total_unit}
+          Amt:${amount?.Value}`,
           shortcode: "SI-MAXIS",
         });
       }
