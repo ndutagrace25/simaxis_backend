@@ -197,4 +197,19 @@ const getAllPayments = async (req: Request, res: Response) => {
   }
 };
 
-export = { getAllPayments, paymentCallback };
+const mpesaConfirmation = async (req: Request, res: Response) => {
+  console.log(req.body);
+  return res.status(httpStatus.OK).json({ message: "Confirmed" });
+};
+
+const mpesaValidation = async (req: Request, res: Response) => {
+  console.log(req.body);
+  return res.status(httpStatus.OK).json({ message: "Validation" });
+};
+
+export = {
+  getAllPayments,
+  mpesaConfirmation,
+  mpesaValidation,
+  paymentCallback,
+};

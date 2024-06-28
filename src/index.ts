@@ -43,6 +43,7 @@ import {
   customer_meters,
   landlord,
   meter,
+  meter_tokens,
   meter_types,
   payments,
   tenant,
@@ -55,6 +56,7 @@ app.use("/customer", customer);
 app.use("/customer-meter", customer_meters);
 app.use("/landlord", landlord);
 app.use("/meter", meter);
+app.use("/meter_tokens", meter_tokens);
 app.use("/meter_types", meter_types);
 app.use("/payments", payments);
 app.use("/tenant", tenant);

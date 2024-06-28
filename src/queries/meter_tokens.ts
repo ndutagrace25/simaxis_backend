@@ -1,7 +1,13 @@
-import { MeterToken } from "../models";
+import { Meter, MeterToken } from "../models";
 
 const getAllMeterTokens = async () => {
   const meters = await MeterToken.findAll({
+    include: [
+      {
+        model: Meter,
+        attributes: ["serial_number"],
+      },
+    ],
     order: [["created_at", "DESC"]],
   });
   return meters;
