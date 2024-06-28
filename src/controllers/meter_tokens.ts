@@ -4,13 +4,13 @@ import { Request, Response } from "express";
 
 const getMeterTokens = async (req: Request, res: Response) => {
   try {
-    const meter_types = await meterTokensQueries.getAllMeterTokens();
+    const tokens = await meterTokensQueries.getAllMeterTokens();
     return res.status(httpStatus.OK).json({
       statusCode: httpStatus.OK,
-      meter_types,
+      tokens,
     });
   } catch (error: any) {
-    console.error("Error fetching meter_types:", error);
+    console.error("Error fetching tokens:", error);
     return res.status(httpStatus.BAD_REQUEST).json({
       statusCode: httpStatus.BAD_REQUEST,
       message: error.message,
