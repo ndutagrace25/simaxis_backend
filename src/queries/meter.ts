@@ -24,6 +24,7 @@ const update = async (
   newData: {
     is_synced_to_stron?: boolean;
     tamper_value?: string;
+    credit_value?: string;
   }
 ) => {
   const updatedMeter = await Meter.update(newData, {

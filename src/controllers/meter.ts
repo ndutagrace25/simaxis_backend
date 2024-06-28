@@ -210,8 +210,58 @@ const clearMeterTamper = async (req: Request, res: Response) => {
   }
 };
 
+const clearMeterCredit = async (req: Request, res: Response) => {
+  const { id } = req.body;
+
+  try {
+    const meter = await meterQueries.getMeterById(id);
+
+    if (!meter) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        statusCode: httpStatus.BAD_REQUEST,
+        message: "Meter not found",
+      });
+    }
+
+    const response = await axios.post(`${config.baseUrl}/ClearCreditDirectly`, {
+      CompanyName: config.CompanyName,
+      UserName: config.UserName,
+      PassWord: config.PassWord,
+      METER_ID: meter.dataValues.serial_number,
+    });
+
+    if (response.data === "false01" || response.data === "false") {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        statusCode: httpStatus.BAD_REQUEST,
+        message:
+          "Meter credit not cleared, ensure the meter exists in stron system",
+        stron_status: response.data,
+      });
+    } else {
+      // update the meter
+      const updatedMeter = await meterQueries.update(id, {
+        credit_value: response.data,
+      });
+
+      return res.status(httpStatus.OK).json({
+        statusCode: httpStatus.OK,
+        message: "Meter credit cleared successfully",
+        meter: updatedMeter,
+        stron_status: response.data,
+      });
+    }
+  } catch (error: any) {
+    return res.status(httpStatus.BAD_REQUEST).json({
+      statusCode: httpStatus.BAD_REQUEST,
+      message: error.message,
+      error: error.errors,
+    });
+  }
+};
+
 export = {
   createMeter,
+  clearMeterCredit,
   clearMeterTamper,
   getAllMeters,
   getSyncedAndAttachedMeters,

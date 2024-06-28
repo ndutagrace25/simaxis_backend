@@ -7,6 +7,7 @@ interface MeterAttributes {
   county_number: number;
   is_synced_to_stron?: boolean;
   tamper_value?: string;
+  credit_value?: string;
   created_at?: Date;
   updated_at?: Date;
   MeterType?: { dataValues: { name: string; type: number } };
@@ -19,6 +20,7 @@ export class Meter extends Model<MeterAttributes> implements MeterAttributes {
   public county_number!: number;
   public is_synced_to_stron?: boolean;
   public tamper_value?: string;
+  public credit_value?: string;
   public created_at?: Date;
   public updated_at?: Date;
 }
@@ -51,6 +53,9 @@ export const MeterFactory = (sequelize: Sequelize) => {
         unique: true,
       },
       tamper_value: {
+        type: DataTypes.STRING(150),
+      },
+      credit_value: {
         type: DataTypes.STRING(150),
       },
       is_synced_to_stron: {
