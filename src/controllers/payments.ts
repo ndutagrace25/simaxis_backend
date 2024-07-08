@@ -201,6 +201,7 @@ const getAllPayments = async (req: Request, res: Response) => {
 };
 
 const mpesaConfirmation = async (req: Request, res: Response) => {
+  console.log(req.body.MSISDN, "MSISDN CONFIRMATION")
   if (req.body.BillRefNumber) {
     // get meter by serial number
     const meter = await meterQueries.getMeterBySerialNumber(
@@ -323,6 +324,8 @@ const mpesaConfirmation = async (req: Request, res: Response) => {
 };
 
 const mpesaValidation = async (req: Request, res: Response) => {
+  console.log(req.body.MSISDN, "MSISDN VALIDATION")
+
   // {
   //   TransactionType: 'Pay Bill',
   //   TransID: 'SG87Z2XSAT',
