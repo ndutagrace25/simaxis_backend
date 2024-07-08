@@ -4,7 +4,7 @@ import payments from "../controllers/payments";
 const router: Router = express.Router();
 
 router.post("/", payments.paymentCallback);
-router.post("/validate", payments.mpesaValidation);
-router.post("/confirm", payments.mpesaConfirmation);
+router.post("/validate", payments.mpesaConfirmation);
+router.post("/confirm", payments.mpesaValidation);
 
 export default router;
