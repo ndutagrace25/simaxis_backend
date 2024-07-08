@@ -199,13 +199,12 @@ const getAllPayments = async (req: Request, res: Response) => {
 };
 
 const mpesaConfirmation = async (req: Request, res: Response) => {
-  console.log("CONFIRMATION", req.body);
-
   if (req.body.BillRefNumber) {
     // get meter by serial number
     const meter = await meterQueries.getMeterBySerialNumber(
       req.body.BillRefNumber
     );
+
 
     if (!meter) {
       return res.status(httpStatus.OK).json({
@@ -214,10 +213,12 @@ const mpesaConfirmation = async (req: Request, res: Response) => {
       });
     } else {
       try {
-        const customer_meter = await customerMeterQueries.getCustomerMeterById(
+        const customer_meter = await customerMeterQueries.getCustomerMeterByMeterId(
           // @ts-ignore
-          meter?.id
+          meter?.dataValues?.id
         );
+
+        console.log(customer_meter)
         // check if the payment is already submited
         const paymentCodeExists = await paymentsQueries.getPaymentByMpesaCode(
           req.body.TransID
@@ -235,7 +236,7 @@ const mpesaConfirmation = async (req: Request, res: Response) => {
             // @ts-ignore
             meter_number: req.body.BillRefNumber,
             // @ts-ignore
-            meter_id: meter?.id,
+            meter_id: meter?.dataValues?.id,
           };
 
           // save payment
@@ -287,24 +288,32 @@ const mpesaConfirmation = async (req: Request, res: Response) => {
               ResultDesc: "Accepted",
             });
           } else {
+            console.log("REJECT 1");
             return res.status(httpStatus.OK).json({
               ResultCode: "C2B00016",
               ResultDesc: "Rejected",
             });
           }
         } else {
+          console.log("REJECT 2");
           return res.status(httpStatus.OK).json({
             ResultCode: "C2B00016",
             ResultDesc: "Rejected",
           });
         }
-      } catch (error) {
+      } catch (error: any) {
+        console.log("REJECT 3", error.message);
         return res.status(httpStatus.OK).json({
           ResultCode: "C2B00016",
           ResultDesc: "Rejected",
         });
       }
     }
+  } else {
+    return res.status(httpStatus.OK).json({
+      ResultCode: "C2B00016", // other reasons
+      ResultDesc: "Rejected",
+    });
   }
 };
 
@@ -349,6 +358,11 @@ const mpesaValidation = async (req: Request, res: Response) => {
         ResultDesc: "Accepted",
       });
     }
+  } else {
+    return res.status(httpStatus.OK).json({
+      ResultCode: "C2B00016", // other reasons
+      ResultDesc: "Rejected",
+    });
   }
 };
 
