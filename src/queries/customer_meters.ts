@@ -34,7 +34,7 @@ const getAllCustomerMeters = async () => {
 };
 
 const getCustomerMeterByMeterId = async (meter_id: string) => {
-  console.log(meter_id, "meter id");
+  // console.log(meter_id, "meter id");
   const meter = await CustomerMeter.findOne({ where: { meter_id } });
   return meter;
 };

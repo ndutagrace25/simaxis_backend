@@ -16,6 +16,8 @@ const paymentCallback = async (req: Request, res: Response) => {
   const { meter_number, meter_id } = req.query;
   const { Body } = req.body;
 
+  console.log(Body, "getting here");
+
   let mpesaCode: any;
 
   // get customer meter by meter_id
@@ -86,7 +88,7 @@ const paymentCallback = async (req: Request, res: Response) => {
       const paymentCodeExists = await paymentsQueries.getPaymentByMpesaCode(
         mpesaCode?.Value
       );
-      console.log(paymentCodeExists?.payment_code, "getting here 1");
+      // console.log(paymentCodeExists?.payment_code, "getting here 1");
 
       if (!paymentCodeExists?.payment_code) {
         console.log(paymentCodeExists?.payment_code, "getting here");
@@ -205,7 +207,6 @@ const mpesaConfirmation = async (req: Request, res: Response) => {
       req.body.BillRefNumber
     );
 
-
     if (!meter) {
       return res.status(httpStatus.OK).json({
         ResultCode: "C2B00012", // invalid account number
@@ -213,12 +214,13 @@ const mpesaConfirmation = async (req: Request, res: Response) => {
       });
     } else {
       try {
-        const customer_meter = await customerMeterQueries.getCustomerMeterByMeterId(
-          // @ts-ignore
-          meter?.dataValues?.id
-        );
+        const customer_meter =
+          await customerMeterQueries.getCustomerMeterByMeterId(
+            // @ts-ignore
+            meter?.dataValues?.id
+          );
 
-        console.log(customer_meter)
+        console.log(customer_meter);
         // check if the payment is already submited
         const paymentCodeExists = await paymentsQueries.getPaymentByMpesaCode(
           req.body.TransID
@@ -282,6 +284,7 @@ const mpesaConfirmation = async (req: Request, res: Response) => {
               Amt:${req.body.TransAmount}`,
               shortcode: "SI-MAXIS",
             });
+            console.log("CONFIRMATION SUCCESSFUL");
 
             return res.status(httpStatus.OK).json({
               ResultCode: "0",
@@ -310,6 +313,8 @@ const mpesaConfirmation = async (req: Request, res: Response) => {
       }
     }
   } else {
+    console.log("CONFIRMATION OTHER ERRORS");
+
     return res.status(httpStatus.OK).json({
       ResultCode: "C2B00016", // other reasons
       ResultDesc: "Rejected",
@@ -318,7 +323,6 @@ const mpesaConfirmation = async (req: Request, res: Response) => {
 };
 
 const mpesaValidation = async (req: Request, res: Response) => {
-  console.log("VALIDATION", req.body);
   // {
   //   TransactionType: 'Pay Bill',
   //   TransID: 'SG87Z2XSAT',
@@ -341,6 +345,8 @@ const mpesaValidation = async (req: Request, res: Response) => {
   //   "ResultDesc": "Accepted",
   // }
 
+  console.log(req.body.BillRefNumber, "req.body.BillRefNumber");
+
   if (req.body.BillRefNumber) {
     // get meter by serial number
     const meter = await meterQueries.getMeterBySerialNumber(
@@ -348,17 +354,21 @@ const mpesaValidation = async (req: Request, res: Response) => {
     );
 
     if (!meter) {
+      console.log("ACCOUNT METER NOT FOUND");
       return res.status(httpStatus.OK).json({
         ResultCode: "C2B00012", // invalid account number
         ResultDesc: "Rejected",
       });
     } else {
+      console.log("VALIDATION SUCCESSFUL");
+
       return res.status(httpStatus.OK).json({
         ResultCode: "0",
         ResultDesc: "Accepted",
       });
     }
   } else {
+    console.log("VALIDATION OTHER EERORS");
     return res.status(httpStatus.OK).json({
       ResultCode: "C2B00016", // other reasons
       ResultDesc: "Rejected",
