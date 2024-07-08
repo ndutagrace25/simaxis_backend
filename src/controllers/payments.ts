@@ -289,7 +289,7 @@ const mpesaConfirmation = async (req: Request, res: Response) => {
 
             return res.status(httpStatus.OK).json({
               ResultCode: "0",
-              ResultDesc: "Accepted",
+              ResultDesc: "Success",
             });
           } else {
             console.log("REJECT 1");
