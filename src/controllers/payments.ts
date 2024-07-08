@@ -7,6 +7,7 @@ import tokensQueries from "../queries/meter_tokens";
 import { PaymentAttributes } from "../models/payments";
 import axios from "axios";
 import moment from "moment";
+import meterQueries from "../queries/meter";
 
 const stron_config = require("../config/config").stron;
 const sms_config = require("../config/config").sms;
@@ -198,13 +199,157 @@ const getAllPayments = async (req: Request, res: Response) => {
 };
 
 const mpesaConfirmation = async (req: Request, res: Response) => {
-  console.log(req.body);
-  return res.status(httpStatus.OK).json({ message: "Confirmed" });
+  console.log("CONFIRMATION", req.body);
+
+  if (req.body.BillRefNumber) {
+    // get meter by serial number
+    const meter = await meterQueries.getMeterBySerialNumber(
+      req.body.BillRefNumber
+    );
+
+    if (!meter) {
+      return res.status(httpStatus.OK).json({
+        ResultCode: "C2B00012", // invalid account number
+        ResultDesc: "Rejected",
+      });
+    } else {
+      try {
+        const customer_meter = await customerMeterQueries.getCustomerMeterById(
+          // @ts-ignore
+          meter?.id
+        );
+        // check if the payment is already submited
+        const paymentCodeExists = await paymentsQueries.getPaymentByMpesaCode(
+          req.body.TransID
+        );
+
+        if (!paymentCodeExists?.payment_code) {
+          let data: any = {
+            phone_number: req.body.MSISDN,
+            payment_code: req.body.TransID,
+            amount: req.body.TransAmount,
+            payment_date: new Date(),
+            id: uuidv4(),
+            payment_method: "MPESA",
+            customer_id: customer_meter?.customer_id,
+            // @ts-ignore
+            meter_number: req.body.BillRefNumber,
+            // @ts-ignore
+            meter_id: meter?.id,
+          };
+
+          // save payment
+          await paymentsQueries.create(data);
+
+          // send to stron
+          let stronToken = await axios.post(
+            `${stron_config.baseUrl}/VendingMeter`,
+            {
+              CompanyName: stron_config.CompanyName,
+              UserName: stron_config.UserName,
+              PassWord: stron_config.PassWord,
+              MeterId: meter?.serial_number,
+              is_vend_by_unit: "false",
+              Amount: req.body.TransAmount,
+            }
+          );
+
+          if (stronToken?.data?.length > 0) {
+            let token = stronToken?.data[0];
+            // save token
+            let tokenData: any = {
+              token: token?.Token,
+              meter_id: meter?.id,
+              issue_date: new Date(),
+              amount: req.body.TransAmount,
+              token_type: "Energy Meter",
+              total_units: token?.Total_unit,
+              id: uuidv4(),
+            };
+
+            await tokensQueries.create(tokenData);
+
+            // send sms
+            await axios.post(`${sms_config?.baseUrl}`, {
+              apikey: sms_config?.apikey,
+              partnerID: sms_config?.partnerID,
+              mobile: `+${req.body.MSISDN}`,
+              message: `Mtr:${meter?.serial_number}
+              Token:${token?.Token}
+              Date:${moment(new Date()).format("YYYYMMDD HH:mm")}
+              Units:${token?.Total_unit}
+              Amt:${req.body.TransAmount}`,
+              shortcode: "SI-MAXIS",
+            });
+
+            return res.status(httpStatus.OK).json({
+              ResultCode: "0",
+              ResultDesc: "Accepted",
+            });
+          } else {
+            return res.status(httpStatus.OK).json({
+              ResultCode: "C2B00016",
+              ResultDesc: "Rejected",
+            });
+          }
+        } else {
+          return res.status(httpStatus.OK).json({
+            ResultCode: "C2B00016",
+            ResultDesc: "Rejected",
+          });
+        }
+      } catch (error) {
+        return res.status(httpStatus.OK).json({
+          ResultCode: "C2B00016",
+          ResultDesc: "Rejected",
+        });
+      }
+    }
+  }
 };
 
 const mpesaValidation = async (req: Request, res: Response) => {
-  console.log(req.body);
-  return res.status(httpStatus.OK).json({ message: "Validation" });
+  console.log("VALIDATION", req.body);
+  // {
+  //   TransactionType: 'Pay Bill',
+  //   TransID: 'SG87Z2XSAT',
+  //   TransTime: '20240708141631',
+  //   TransAmount: '1.00',
+  //   BusinessShortCode: '4444400',
+  //   BillRefNumber: '11111111111',
+  //   InvoiceNumber: '',
+  //   OrgAccountBalance: '',
+  //   ThirdPartyTransID: '',
+  //   MSISDN: 'ae0c166112b18c9b1e0d004df4952da28b540fab55c826a8a2ab244abc5dc7f8',
+  //   FirstName: 'Grace'
+  // }
+  //   {
+  //     "ResultCode": "C2B00012", // invalid account number
+  //     "ResultDesc": "Rejected",
+  //  }
+  // {
+  //   "ResultCode": "0",
+  //   "ResultDesc": "Accepted",
+  // }
+
+  if (req.body.BillRefNumber) {
+    // get meter by serial number
+    const meter = await meterQueries.getMeterBySerialNumber(
+      req.body.BillRefNumber
+    );
+
+    if (!meter) {
+      return res.status(httpStatus.OK).json({
+        ResultCode: "C2B00012", // invalid account number
+        ResultDesc: "Rejected",
+      });
+    } else {
+      return res.status(httpStatus.OK).json({
+        ResultCode: "0",
+        ResultDesc: "Accepted",
+      });
+    }
+  }
 };
 
 export = {
