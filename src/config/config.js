@@ -49,5 +49,6 @@ module.exports = {
     partnerID: process.env.SMS_PARTNER_ID,
     shortcode: process.env.SMS_SHORT_CODE,
     baseUrl: process.env.SMS_URL,
+    baseUrlOtp: process.env.SMS_URL_OTP,
   },
 };

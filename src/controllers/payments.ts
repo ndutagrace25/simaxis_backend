@@ -201,7 +201,7 @@ const getAllPayments = async (req: Request, res: Response) => {
 };
 
 const mpesaConfirmation = async (req: Request, res: Response) => {
-  console.log(req.body.MSISDN, "MSISDN CONFIRMATION")
+  console.log(req.body.MSISDN, "MSISDN CONFIRMATION");
   if (req.body.BillRefNumber) {
     // get meter by serial number
     const meter = await meterQueries.getMeterBySerialNumber(
@@ -274,16 +274,17 @@ const mpesaConfirmation = async (req: Request, res: Response) => {
             await tokensQueries.create(tokenData);
 
             // send sms
-            await axios.post(`${sms_config?.baseUrl}`, {
+            await axios.post(`${sms_config?.baseUrlOtp}`, {
               apikey: sms_config?.apikey,
               partnerID: sms_config?.partnerID,
-              mobile: `+${req.body.MSISDN}`,
+              mobile: `${req.body.MSISDN}`,
               message: `Mtr:${meter?.serial_number}
               Token:${token?.Token}
               Date:${moment(new Date()).format("YYYYMMDD HH:mm")}
               Units:${token?.Total_unit}
               Amt:${req.body.TransAmount}`,
               shortcode: "SI-MAXIS",
+              hashed: true,
             });
             console.log("CONFIRMATION SUCCESSFUL");
 
@@ -324,7 +325,7 @@ const mpesaConfirmation = async (req: Request, res: Response) => {
 };
 
 const mpesaValidation = async (req: Request, res: Response) => {
-  console.log(req.body.MSISDN, "MSISDN VALIDATION")
+  console.log(req.body.MSISDN, "MSISDN VALIDATION");
 
   // {
   //   TransactionType: 'Pay Bill',
