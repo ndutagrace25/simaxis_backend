@@ -48,7 +48,7 @@ const getMeterById = async (id: string) => {
 const getMeterBySerialNumber = async (serial_number: number) => {
   const meter = await Meter.findOne({
     where: { serial_number },
-    attributes: ["id", "serial_number"],
+    attributes: ["id", "serial_number", "is_synced_to_stron"],
   });
 
   return meter;

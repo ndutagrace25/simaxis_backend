@@ -221,13 +221,18 @@ const mpesaConfirmation = async (req: Request, res: Response) => {
             meter?.dataValues?.id
           );
 
-        console.log(customer_meter);
+        console.log(customer_meter?.dataValues?.is_synced_to_stron);
         // check if the payment is already submited
         const paymentCodeExists = await paymentsQueries.getPaymentByMpesaCode(
           req.body.TransID
         );
 
-        if (!paymentCodeExists?.payment_code) {
+        // console.log(paymentCodeExists)
+
+        if (
+          !paymentCodeExists?.payment_code &&
+          customer_meter?.dataValues?.is_synced_to_stron
+        ) {
           let data: any = {
             phone_number: req.body.MSISDN,
             payment_code: req.body.TransID,
@@ -302,7 +307,9 @@ const mpesaConfirmation = async (req: Request, res: Response) => {
         } else {
           console.log("REJECT 2");
           return res.status(httpStatus.OK).json({
-            ResultCode: "C2B00016",
+            ResultCode: customer_meter?.dataValues?.is_synced_to_stron
+              ? "C2B00016"
+              : "C2B00012",
             ResultDesc: "Rejected",
           });
         }
@@ -365,11 +372,17 @@ const mpesaValidation = async (req: Request, res: Response) => {
       });
     } else {
       console.log("VALIDATION SUCCESSFUL");
-
-      return res.status(httpStatus.OK).json({
-        ResultCode: "0",
-        ResultDesc: "Accepted",
-      });
+      if (meter?.dataValues?.is_synced_to_stron) {
+        return res.status(httpStatus.OK).json({
+          ResultCode: "0",
+          ResultDesc: "Accepted",
+        });
+      } else {
+        return res.status(httpStatus.OK).json({
+          ResultCode: "C2B00012", // invalid account number
+          ResultDesc: "Rejected",
+        });
+      }
     }
   } else {
     console.log("VALIDATION OTHER EERORS");

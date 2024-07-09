@@ -8,8 +8,9 @@ import { v4 as uuidv4 } from "uuid";
 const config = require("../config/config").stron;
 
 const getCustomers = async (req: Request, res: Response) => {
+  const keyword: any = req?.query?.keyword ? req.query.keyword : "";
   try {
-    const customers = await customerQueries.getAllCustomers();
+    const customers = await customerQueries.getAllCustomers(keyword);
     return res.status(httpStatus.OK).json({
       statusCode: httpStatus.OK,
       customers,

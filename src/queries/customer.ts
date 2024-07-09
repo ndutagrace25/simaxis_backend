@@ -1,12 +1,32 @@
 import { Customer, Tenant, User } from "../models";
+import { Op } from "sequelize";
 
-const getAllCustomers = async () => {
+const getAllCustomers = async (searchTerm = "") => {
+  const searchCondition = {
+    [Op.or]: [
+      { first_name: { [Op.iLike]: `%${searchTerm}%` } },
+      { last_name: { [Op.iLike]: `%${searchTerm}%` } },
+      { middle_name: { [Op.iLike]: `%${searchTerm}%` } },
+      {
+        "$User.email$": { [Op.iLike]: `%${searchTerm}%` },
+      },
+      {
+        "$User.phone$": { [Op.iLike]: `%${searchTerm}%` },
+      },
+    ],
+  };
   const customers = await Customer.findAll({
-    include: { model: User, attributes: ["phone", "email"] },
+    where: searchTerm ? searchCondition : {},
+    include: {
+      model: User,
+      attributes: ["phone", "email"],
+    },
     order: [["created_at", "DESC"]],
   });
+
   return customers;
 };
+
 const getAllLandlords = async () => {
   const landlords = await Customer.findAll({
     where: { is_verified: true, is_synced_to_stron: true },

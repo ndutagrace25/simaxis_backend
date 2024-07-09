@@ -18,6 +18,7 @@ interface CustomerAttributes {
   building_name?: string;
   created_at?: Date;
   updated_at?: Date;
+  phone?: any;
   User?: { dataValues?: { phone: string; email: string; id: string } };
 }
 
