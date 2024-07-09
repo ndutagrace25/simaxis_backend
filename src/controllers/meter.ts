@@ -8,8 +8,9 @@ import { validationResult } from "express-validator";
 const config = require("../config/config").stron;
 
 const getAllMeters = async (req: Request, res: Response) => {
+  const keyword: any = req?.query?.keyword ? req.query.keyword : "";
   try {
-    const meters = await meterQueries.getAllMeters();
+    const meters = await meterQueries.getAllMeters(keyword);
     return res.status(httpStatus.OK).json({
       statusCode: httpStatus.OK,
       meters,

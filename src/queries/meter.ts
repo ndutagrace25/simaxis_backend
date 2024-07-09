@@ -1,7 +1,19 @@
 import { CustomerMeter, Meter, MeterTypes, User } from "../models";
+import { Op } from "sequelize";
 
-const getAllMeters = async () => {
+const getAllMeters = async (searchTerm = "") => {
+  // @ts-ignore
+  const is_number = !isNaN(parseFloat(searchTerm)) && isFinite(searchTerm);
+  console.log(is_number, "is_number");
+  const searchCondition = {
+    [Op.or]: [
+      {
+        serial_number: is_number ? BigInt(searchTerm) : 0,
+      },
+    ],
+  };
   const meters = await Meter.findAll({
+    where: searchTerm ? searchCondition : {},
     include: { model: MeterTypes, attributes: ["name", "type"] },
     order: [["created_at", "DESC"]],
   });
