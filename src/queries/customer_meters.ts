@@ -1,10 +1,4 @@
-import {
-  Customer,
-  CustomerMeter,
-  Meter,
-  MeterToken,
-  Tenant,
-} from "../models";
+import { Customer, CustomerMeter, Meter, MeterToken, Tenant } from "../models";
 
 const getAllCustomerMeters = async (query?: {
   meter_id?: string;
@@ -18,7 +12,7 @@ const getAllCustomerMeters = async (query?: {
         }
       : query?.customer_id
       ? { customer_id: query?.customer_id }
-      : { customer_id: "2b813658-0689-432f-bbfa-a94740e4da04" },
+      : {},
     include: [
       {
         model: Customer,
