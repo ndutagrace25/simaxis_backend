@@ -1,15 +1,24 @@
-import { Op, Sequelize } from "sequelize";
 import {
   Customer,
   CustomerMeter,
   Meter,
   MeterToken,
-  sequelize,
   Tenant,
 } from "../models";
 
-const getAllCustomerMeters = async () => {
+const getAllCustomerMeters = async (query?: {
+  meter_id?: string;
+  customer_id?: string;
+  county_number?: string;
+}) => {
   const customer_meters = await CustomerMeter.findAll({
+    where: query?.meter_id
+      ? {
+          meter_id: query?.meter_id,
+        }
+      : query?.customer_id
+      ? { customer_id: query?.customer_id }
+      : { customer_id: "2b813658-0689-432f-bbfa-a94740e4da04" },
     include: [
       {
         model: Customer,
@@ -26,6 +35,9 @@ const getAllCustomerMeters = async () => {
       },
       {
         model: Meter,
+        where: query?.county_number
+          ? { county_number: query?.county_number }
+          : {},
         attributes: ["serial_number", "county_number", "is_synced_to_stron"],
       },
     ],

@@ -7,7 +7,9 @@ const config = require("../config/config").stron;
 
 const getCustomerMeters = async (req: Request, res: Response) => {
   try {
-    const customer_meters = await customerMetersQueries.getAllCustomerMeters();
+    const customer_meters = await customerMetersQueries.getAllCustomerMeters(
+      req.query
+    );
     return res.status(httpStatus.OK).json({
       statusCode: httpStatus.OK,
       customer_meters,
