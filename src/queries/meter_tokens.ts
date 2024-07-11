@@ -1,7 +1,8 @@
 import { Meter, MeterToken } from "../models";
 
-const getAllMeterTokens = async () => {
+const getAllMeterTokens = async (meter_id = "") => {
   const tokens = await MeterToken.findAll({
+    where: meter_id ? { meter_id } : {},
     include: [
       {
         model: Meter,
