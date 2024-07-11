@@ -1,7 +1,16 @@
 import { Payment } from "../models";
+import { Op } from "sequelize";
 
-const getAllPayments = async () => {
+const getAllPayments = async (searchTerm = "") => {
+  const searchCondition = {
+    [Op.or]: [
+      { meter_number: { [Op.iLike]: `%${searchTerm}%` } },
+      { phone_number: { [Op.iLike]: `%${searchTerm}%` } },
+      { payment_code: { [Op.iLike]: `%${searchTerm}%` } },
+    ],
+  };
   const meters = await Payment.findAll({
+    where: searchTerm ? searchCondition : {},
     order: [["created_at", "DESC"]],
   });
   return meters;

@@ -185,8 +185,9 @@ const paymentCallback = async (req: Request, res: Response) => {
 };
 
 const getAllPayments = async (req: Request, res: Response) => {
+  const keyword: any = req?.query?.keyword ? req.query.keyword : "";
   try {
-    const payments = await paymentsQueries.getAllPayments();
+    const payments = await paymentsQueries.getAllPayments(keyword);
     return res.status(httpStatus.OK).json({
       statusCode: httpStatus.OK,
       payments,
