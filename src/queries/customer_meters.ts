@@ -35,6 +35,7 @@ const getAllCustomerMeters = async (query?: {
         attributes: ["serial_number", "county_number", "is_synced_to_stron"],
       },
     ],
+    order: [["created_at", "DESC"]],
   });
   return customer_meters;
 };
