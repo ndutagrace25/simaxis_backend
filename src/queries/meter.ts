@@ -4,7 +4,6 @@ import { Op } from "sequelize";
 const getAllMeters = async (searchTerm = "") => {
   // @ts-ignore
   const is_number = !isNaN(parseFloat(searchTerm)) && isFinite(searchTerm);
-  console.log(is_number, "is_number");
   const searchCondition = {
     [Op.or]: [
       {
