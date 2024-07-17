@@ -22,3 +22,32 @@ export const saveMeter: ValidationChain[] = [
     .withMessage("County number is required")
     .trim(),
 ];
+
+export const manualPayment: ValidationChain[] = [
+  body("meter_id")
+    .exists()
+    .withMessage("Meter is required")
+    .isString()
+    .withMessage("Meter is required")
+    .trim(),
+  body("phone_number")
+    .exists()
+    .withMessage("Phone number is required")
+    .isString()
+    .withMessage("Phone number is required")
+    .isLength({ min: 9, max: 13 })
+    .withMessage("Phone number is invalid")
+    .trim(),
+  body("amount")
+    .exists()
+    .withMessage("Amount is required")
+    .isInt()
+    .withMessage("Amount is type number is required")
+    .trim(),
+  body("payment_code")
+    .exists()
+    .withMessage("MPESA code is required")
+    .isString()
+    .withMessage("MPESA code is required")
+    .trim(),
+];

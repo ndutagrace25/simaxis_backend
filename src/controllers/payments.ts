@@ -8,6 +8,8 @@ import { PaymentAttributes } from "../models/payments";
 import axios from "axios";
 import moment from "moment";
 import meterQueries from "../queries/meter";
+import { cleanPhone } from "../utils";
+import { validationResult } from "express-validator";
 
 const stron_config = require("../config/config").stron;
 const sms_config = require("../config/config").sms;
@@ -379,8 +381,120 @@ const timeoutUrl = async (req: Request, res: Response) => {
   return res.status(httpStatus.OK).json({ message: "success" });
 };
 
+const manualPayment = async (req: Request, res: Response) => {
+  const { meter_id, payment_code, phone_number, amount } = req.body;
+  const errors: any = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(httpStatus.BAD_REQUEST).json({
+      statusCode: httpStatus.BAD_REQUEST,
+      message: errors.errors[0]?.msg,
+    });
+  }
+
+  let phone = cleanPhone(phone_number);
+
+  // get customer meter information
+  const customer_meter = await customerMeterQueries.getCustomerMeterByMeterId(
+    meter_id
+  );
+
+  const meter = await meterQueries.getMeterById(meter_id);
+
+  if (!customer_meter || !meter) {
+    return res.status(httpStatus.BAD_REQUEST).json({
+      statusCode: httpStatus.BAD_REQUEST,
+      message: `Meter number not found!`,
+    });
+  }
+
+  try {
+    let paymentSaved: any;
+    let stronToken: any;
+
+    let data: PaymentAttributes = {
+      phone_number: phone,
+      payment_code,
+      amount: amount,
+      payment_date: new Date(),
+      id: uuidv4(),
+      payment_method: "MPESA",
+      customer_id: customer_meter?.customer_id,
+      // @ts-ignore
+      meter_number: meter?.serial_number,
+      // @ts-ignore
+      meter_id,
+      // @ts-ignore
+      generated_manually: true,
+    };
+
+    const paymentCodeExists = await paymentsQueries.getPaymentByMpesaCode(
+      payment_code
+    );
+
+    if (!paymentCodeExists?.payment_code) {
+      paymentSaved = await paymentsQueries.create(data);
+
+      stronToken = await axios.post(`${stron_config.baseUrl}/VendingMeter`, {
+        CompanyName: stron_config.CompanyName,
+        UserName: stron_config.UserName,
+        PassWord: stron_config.PassWord,
+        MeterId: meter?.serial_number,
+        is_vend_by_unit: "false",
+        Amount: amount,
+      });
+
+      if (stronToken?.data?.length > 0) {
+        let token = stronToken?.data[0];
+        // save token
+        let tokenData: any = {
+          token: token?.Token,
+          meter_id,
+          issue_date: new Date(),
+          amount: amount,
+          token_type: "Energy Meter",
+          total_units: token?.Total_unit,
+          id: uuidv4(),
+          generated_manually: true,
+        };
+
+        await tokensQueries.create(tokenData);
+
+        // send sms
+        await axios.post(`${sms_config?.baseUrl}`, {
+          apikey: sms_config?.apikey,
+          partnerID: sms_config?.partnerID,
+          mobile: phone,
+          message: `Mtr:${meter?.serial_number}
+          Token:${token?.Token}
+          Date:${moment(new Date()).format("YYYYMMDD HH:mm")}
+          Units:${token?.Total_unit}
+          Amt:${amount}`,
+          shortcode: "SI-MAXIS",
+        });
+      }
+      return res.status(httpStatus.OK).json({
+        statusCode: httpStatus.OK,
+        paymentSaved,
+        message: "Payment saved and token generated successfully",
+      });
+    } else {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        statusCode: httpStatus.BAD_REQUEST,
+        message: "Payment already exists",
+      });
+    }
+  } catch (error: any) {
+    return res.status(httpStatus.BAD_REQUEST).json({
+      statusCode: httpStatus.BAD_REQUEST,
+      message: error.message,
+    });
+  }
+};
+
 export = {
   getAllPayments,
+  manualPayment,
   mpesaConfirmation,
   mpesaValidation,
   paymentCallback,

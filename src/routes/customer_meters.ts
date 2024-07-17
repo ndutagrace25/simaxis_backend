@@ -1,6 +1,8 @@
 import express, { Router } from "express";
 import customer_meters from "../controllers/customer_meters";
+import payments from "../controllers/payments";
 import verifyToken from "../utils/verifyToken";
+import { meterValidator } from "../utils";
 
 const router: Router = express.Router();
 
@@ -16,6 +18,12 @@ router.get(
   "/landlord/tenant/:id",
   verifyToken,
   customer_meters.getCustomerMetersPerTenant
+);
+router.post(
+  "/manual/payment",
+  verifyToken,
+  meterValidator.manualPayment,
+  payments.manualPayment
 );
 
 export default router;

@@ -10,6 +10,7 @@ interface MeterTokensAttributes {
   created_at?: Date;
   updated_at?: Date;
   total_units?: number;
+  generated_manually?: string;
 }
 
 export class MeterToken
@@ -23,6 +24,7 @@ export class MeterToken
   public amount!: number;
   public token_type?: string;
   public total_units?: number;
+  public generated_manually?: string;
   public created_at?: Date;
   public updated_at?: Date;
 }
@@ -61,6 +63,9 @@ export const MeterTokenFactory = (sequelize: Sequelize) => {
       },
       token_type: {
         type: DataTypes.STRING,
+      },
+      generated_manually: {
+        type: DataTypes.BOOLEAN,
       },
       created_at: {
         type: DataTypes.DATE,

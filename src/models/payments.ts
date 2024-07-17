@@ -12,6 +12,7 @@ export interface PaymentAttributes {
   updated_at?: Date;
   phone_number?: string;
   meter_number?: string;
+  generated_manually?: string;
 }
 
 export class Payments
@@ -27,6 +28,7 @@ export class Payments
   public payment_code?: string;
   public meter_number?: string;
   public phone_number?: string;
+  public generated_manually?: string;
   public created_at?: Date;
   public updated_at?: Date;
 }
@@ -71,6 +73,9 @@ export const PaymentFactory = (sequelize: Sequelize) => {
       },
       phone_number: {
         type: DataTypes.STRING,
+      },
+      generated_manually: {
+        type: DataTypes.BOOLEAN,
       },
       meter_number: {
         type: DataTypes.STRING,
