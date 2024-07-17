@@ -335,28 +335,6 @@ const mpesaConfirmation = async (req: Request, res: Response) => {
 const mpesaValidation = async (req: Request, res: Response) => {
   console.log(req.body.MSISDN, "MSISDN VALIDATION");
 
-  // {
-  //   TransactionType: 'Pay Bill',
-  //   TransID: 'SG87Z2XSAT',
-  //   TransTime: '20240708141631',
-  //   TransAmount: '1.00',
-  //   BusinessShortCode: '4444400',
-  //   BillRefNumber: '11111111111',
-  //   InvoiceNumber: '',
-  //   OrgAccountBalance: '',
-  //   ThirdPartyTransID: '',
-  //   MSISDN: 'ae0c166112b18c9b1e0d004df4952da28b540fab55c826a8a2ab244abc5dc7f8',
-  //   FirstName: 'Grace'
-  // }
-  //   {
-  //     "ResultCode": "C2B00012", // invalid account number
-  //     "ResultDesc": "Rejected",
-  //  }
-  // {
-  //   "ResultCode": "0",
-  //   "ResultDesc": "Accepted",
-  // }
-
   console.log(req.body.BillRefNumber, "req.body.BillRefNumber");
 
   if (req.body.BillRefNumber) {
@@ -394,9 +372,17 @@ const mpesaValidation = async (req: Request, res: Response) => {
   }
 };
 
+const timeoutUrl = async (req: Request, res: Response) => {
+  console.log("GETTING HERE");
+  console.log(req.body);
+  console.log(req.body?.Result?.ReferenceData);
+  return res.status(httpStatus.OK).json({ message: "success" });
+};
+
 export = {
   getAllPayments,
   mpesaConfirmation,
   mpesaValidation,
   paymentCallback,
+  timeoutUrl,
 };
