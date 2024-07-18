@@ -13,6 +13,8 @@ dotenv.config();
 
 const env = process.env.NODE_ENV;
 
+console.log(process.env.NODE_ENV, "my variables")
+
 // @ts-ignore
 const config = require("../config/config")[env];
 
