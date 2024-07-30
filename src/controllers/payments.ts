@@ -10,9 +10,53 @@ import moment from "moment";
 import meterQueries from "../queries/meter";
 import { cleanPhone } from "../utils";
 import { validationResult } from "express-validator";
+import cron from "node-cron";
+import logging from "npmlog";
 
 const stron_config = require("../config/config").stron;
 const sms_config = require("../config/config").sms;
+
+cron.schedule("0 */12 * * *", async () => {
+  logging.info("Checking advanta balance", "");
+  let balance: any = await axios.post(
+    `${sms_config?.mainBaseUrl + `/getbalance/`}`,
+    {
+      apikey: sms_config?.apikey,
+      partnerID: sms_config?.partnerID,
+    }
+  );
+
+  let smsObject = {
+    partnerID: sms_config?.partnerID,
+    apikey: sms_config?.apikey,
+    pass_type: "plain",
+    clientsmsid: 1234,
+    message: `Advanta SMS credit balance is currently at ${balance.data.credit}, consider topping up more credit to avoid SMS failures to SI-MAXIS customers`,
+    shortcode: "SI-MAXIS",
+  };
+  if (balance.data.credit && parseInt(balance.data.credit) < 500) {
+    logging.info("SMS is below threshold", balance.data.credit);
+    await axios.post(`${sms_config?.mainBaseUrl + `/sendbulk`}`, {
+      count: 1,
+      smslist: [
+        {
+          ...smsObject,
+          mobile: "+254708807403",
+        },
+        {
+          ...smsObject,
+          mobile: "+254721863405",
+        },
+        {
+          ...smsObject,
+          mobile: "+254722164408",
+        },
+      ],
+    });
+  } else {
+    logging.info("SMS Balance", balance.data.credit);
+  }
+});
 
 const paymentCallback = async (req: Request, res: Response) => {
   const { meter_number, meter_id } = req.query;
