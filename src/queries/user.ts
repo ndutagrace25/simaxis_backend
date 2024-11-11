@@ -47,8 +47,26 @@ const getUserByPhone = async (phone: string) => {
   return user;
 };
 
+const updateUser = async (
+  id: string,
+  newData: {
+    password?: string;
+  }
+) => {
+  const updateUser = await User.update(
+    { ...newData, updated_at: new Date() },
+    {
+      where: { id },
+      returning: true,
+    }
+  );
+
+  return updateUser;
+};
+
 export = {
   getAllUsers,
   getUserByPhone,
   saveUser,
+  updateUser,
 };

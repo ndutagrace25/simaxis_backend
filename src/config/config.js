@@ -50,5 +50,6 @@ module.exports = {
     shortcode: process.env.SMS_SHORT_CODE,
     baseUrl: process.env.SMS_URL,
     baseUrlOtp: process.env.SMS_URL_OTP,
+    mainBaseUrl: process.env.SMS_BASE_URL
   },
 };
