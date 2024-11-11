@@ -221,6 +221,53 @@ const registerUser = async (req: Request, res: Response) => {
   }
 };
 
+const resetPassword = async (req: Request, res: Response) => {
+  const validationErrors: ValidationError[] = validationResult(req).array();
+
+  if (validationErrors.length > 0) {
+    const [error]: any = validationErrors;
+    return res
+      .status(httpStatus.BAD_REQUEST)
+      .json({ statusCode: httpStatus.BAD_REQUEST, message: error.msg });
+  }
+
+  const { password, phone } = req.body;
+
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassowd = await bcrypt.hash(password, salt);
+
+  let user_data = {
+    phone: cleanPhone(phone),
+    password: hashedPassowd,
+  };
+
+  try {
+    let userExists = await usersQueries.getUserByPhone(user_data?.phone);
+
+    if (!userExists) {
+      return res.status(httpStatus.BAD_REQUEST).json({
+        statusCode: httpStatus.BAD_REQUEST,
+        message: "No user with that phone number",
+      });
+    }
+
+    await usersQueries.updateUser(userExists?.id, {
+      password: user_data?.password,
+    });
+
+    return res.status(httpStatus.OK).json({
+      statusCode: httpStatus.OK,
+      message: "Password changed successful",
+    });
+  } catch (error: any) {
+    return res.status(httpStatus.BAD_REQUEST).json({
+      statusCode: httpStatus.BAD_REQUEST,
+      message: error.message,
+      errors: error.errors,
+    });
+  }
+};
+
 const getUsers = async (req: Request, res: Response) => {
   try {
     const users = await usersQueries.getAllUsers();
@@ -267,4 +314,4 @@ const saveUser = async (req: Request, res: Response) => {
   }
 };
 
-export = { loginUser, getUsers, registerUser, saveUser };
+export = { loginUser, getUsers, registerUser, saveUser, resetPassword };
