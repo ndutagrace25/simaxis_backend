@@ -16,6 +16,20 @@ import logging from "npmlog";
 const stron_config = require("../config/config").stron;
 const sms_config = require("../config/config").sms;
 
+interface RevenueDataPoint {
+  period: string;
+  revenue: number;
+  date: string;
+}
+
+type FilterType = "daily" | "monthly" | "yearly";
+
+interface RevenueResponse {
+  data: RevenueDataPoint[];
+  totalRevenue: number;
+  periodLabel: string;
+}
+
 cron.schedule("0 */12 * * *", async () => {
   logging.info("Checking advanta balance", "");
   let balance: any = await axios.post(
@@ -536,6 +550,60 @@ const manualPayment = async (req: Request, res: Response) => {
   }
 };
 
+const getRevenueData = async (
+  req: Request,
+  res: Response
+) => {
+  const filterType: FilterType = req.query.filterType as FilterType;
+  const selectedDate: string = req.query.selectedDate as string;
+
+  const dateObj = new Date(selectedDate);
+  let data: RevenueDataPoint[] = [];
+  let periodLabel = "";
+
+  try {
+    switch (filterType) {
+      case "daily":
+        const year = dateObj.getFullYear();
+        const month = dateObj.getMonth() + 1; // getMonth() returns 0-based month
+        data = await paymentsQueries.getDailyRevenue(year, month);
+        periodLabel = dateObj.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+        });
+        break;
+
+      case "monthly":
+        const selectedYear = dateObj.getFullYear();
+        data = await paymentsQueries.getMonthlyRevenue(selectedYear);
+        periodLabel = selectedYear.toString();
+        break;
+
+      case "yearly":
+        data = await paymentsQueries.getYearlyRevenue(5);
+        periodLabel = "Last 5 Years";
+        break;
+
+      default:
+        throw new Error("Invalid filter type");
+    }
+
+    const totalRevenue = data.reduce((sum, item) => sum + item.revenue, 0);
+
+    return res.status(httpStatus.OK).json({
+      data,
+      totalRevenue,
+      periodLabel,
+    });
+  } catch (error: any) {
+    console.error("Error fetching revenue data:", error);
+    return res.status(httpStatus.BAD_REQUEST).json({
+      statusCode: httpStatus.BAD_REQUEST,
+      message: error.message,
+    });
+  }
+};
+
 export = {
   getAllPayments,
   manualPayment,
@@ -543,4 +611,5 @@ export = {
   mpesaValidation,
   paymentCallback,
   timeoutUrl,
+  getRevenueData,
 };
