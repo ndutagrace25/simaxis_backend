@@ -9,12 +9,13 @@ module.exports = {
     host: process.env.DB_HOST,
     dialect: "postgres",
     logging: false,
+    timezone: "Africa/Nairobi",
     dialectOptions: {
       ssl: {
         require: true,
-        rejectUnauthorized: false // Heroku requires this for self-signed certificates
-      }
-    }
+        rejectUnauthorized: false, // Heroku requires this for self-signed certificates
+      },
+    },
   },
   test: {
     username: process.env.DB_USER,
@@ -23,12 +24,13 @@ module.exports = {
     host: process.env.DB_HOST,
     dialect: "postgres",
     logging: false,
+    timezone: "Africa/Nairobi",
     dialectOptions: {
       ssl: {
         require: true,
-        rejectUnauthorized: false // Heroku requires this for self-signed certificate
-      }
-    }
+        rejectUnauthorized: false, // Heroku requires this for self-signed certificate
+      },
+    },
   },
   production: {
     username: process.env.DB_USER,
@@ -37,6 +39,7 @@ module.exports = {
     host: process.env.DB_HOST,
     dialect: "postgres",
     logging: false,
+    timezone: "Africa/Nairobi",
   },
   stron: {
     CompanyName: process.env.STRON_COMPANY_NAME,
@@ -50,6 +53,6 @@ module.exports = {
     shortcode: process.env.SMS_SHORT_CODE,
     baseUrl: process.env.SMS_URL,
     baseUrlOtp: process.env.SMS_URL_OTP,
-    mainBaseUrl: process.env.SMS_BASE_URL
+    mainBaseUrl: process.env.SMS_BASE_URL,
   },
 };
