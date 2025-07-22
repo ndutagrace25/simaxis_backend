@@ -53,8 +53,8 @@ const getDailyRevenue = async (
   month: number
 ): Promise<RevenueDataPoint[]> => {
   // Month is 1-based (1 = January, 12 = December)
-  const startDate = new Date(year, month - 1, 1);
-  const endDate = new Date(year, month, 0); // Last day of the month
+  const startDate = new Date(year, month - 1, 1, 0, 0, 0, 0); // Start of first day
+  const endDate = new Date(year, month, 0, 23, 59, 59, 999); // End of last day of the month
 
   const dailyRevenue = await Payment.findAll({
     attributes: [
@@ -84,8 +84,8 @@ const getDailyRevenue = async (
 
 // Get monthly revenue for a specific year
 const getMonthlyRevenue = async (year: number): Promise<RevenueDataPoint[]> => {
-  const startDate = new Date(year, 0, 1); // January 1st
-  const endDate = new Date(year, 11, 31, 23, 59, 59); // December 31st
+  const startDate = new Date(year, 0, 1, 0, 0, 0, 0); // Start of January 1st
+  const endDate = new Date(year, 11, 31, 23, 59, 59, 999); // End of December 31st
 
   const monthlyRevenue = await Payment.findAll({
     attributes: [
@@ -134,8 +134,8 @@ const getYearlyRevenue = async (
 ): Promise<RevenueDataPoint[]> => {
   const currentYear = new Date().getFullYear();
   const startYear = currentYear - yearsBack + 1;
-  const startDate = new Date(startYear, 0, 1);
-  const endDate = new Date(currentYear, 11, 31, 23, 59, 59);
+  const startDate = new Date(startYear, 0, 1, 0, 0, 0, 0); // Start of first year
+  const endDate = new Date(currentYear, 11, 31, 23, 59, 59, 999); // End of current year
 
   const yearlyRevenue = await Payment.findAll({
     attributes: [
