@@ -10,12 +10,12 @@ module.exports = {
     dialect: "postgres",
     logging: false,
     timezone: "Africa/Nairobi",
-    // dialectOptions: {
-    //   ssl: {
-    //     require: true, //false on localhost
-    //     rejectUnauthorized: false, // Heroku requires this for self-signed certificates
-    //   },
-    // },
+    dialectOptions: {
+      ssl: {
+        require: true, //false on localhost
+        rejectUnauthorized: false, // Heroku requires this for self-signed certificates
+      },
+    },
   },
   test: {
     username: process.env.DB_USER,
