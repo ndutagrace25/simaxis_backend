@@ -182,11 +182,11 @@ const paymentCallback = async (req: Request, res: Response) => {
             apikey: sms_config?.apikey,
             partnerID: sms_config?.partnerID,
             mobile: `+${phone_number?.Value}`,
-            message: `Mtr:${meter_number}
-            Token:${token?.Token}
-            Date:${moment(new Date()).format("YYYYMMDD HH:mm")}
-            Units:${token?.Total_unit}
-            Amt:${amount?.Value}`,
+            message: `Mtr: ${meter_number}\nToken: ${
+              token?.Token
+            }\nDate: ${moment(new Date()).format("YYYYMMDD HH:mm")}\nUnits: ${
+              token?.Total_unit
+            }\nAmt: ${amount?.Value}`,
             shortcode: "SI-MAXIS",
           });
         }
@@ -344,11 +344,11 @@ const mpesaConfirmation = async (req: Request, res: Response) => {
               apikey: sms_config?.apikey,
               partnerID: sms_config?.partnerID,
               mobile: `${req.body.MSISDN}`,
-              message: `Mtr:${meter?.serial_number}
-              Token:${token?.Token}
-              Date:${moment(new Date()).format("YYYYMMDD HH:mm")}
-              Units:${token?.Total_unit}
-              Amt:${req.body.TransAmount}`,
+              message: `Mtr: ${meter?.serial_number}\nToken: ${
+                token?.Token
+              }\nDate: ${moment(new Date()).format(
+                "YYYY/MM/D HH:mm"
+              )}\nUnits: ${token?.Total_unit}\nAmt: ${req.body.TransAmount}`,
               shortcode: "SI-MAXIS",
               hashed: true,
             });
@@ -523,11 +523,11 @@ const manualPayment = async (req: Request, res: Response) => {
           apikey: sms_config?.apikey,
           partnerID: sms_config?.partnerID,
           mobile: phone,
-          message: `Mtr:${meter?.serial_number}
-          Token:${token?.Token}
-          Date:${moment(new Date()).format("YYYYMMDD HH:mm")}
-          Units:${token?.Total_unit}
-          Amt:${amount}`,
+          message: `Mtr: ${meter?.serial_number}\nToken: ${
+            token?.Token
+          }\nDate: ${moment(new Date()).format("YYYY/MM/D HH:mm")}\nUnits: ${
+            token?.Total_unit
+          }\nAmt: ${amount}`,
           shortcode: "SI-MAXIS",
         });
       }
@@ -550,10 +550,7 @@ const manualPayment = async (req: Request, res: Response) => {
   }
 };
 
-const getRevenueData = async (
-  req: Request,
-  res: Response
-) => {
+const getRevenueData = async (req: Request, res: Response) => {
   const filterType: FilterType = req.query.filterType as FilterType;
   const selectedDate: string = req.query.selectedDate as string;
 
