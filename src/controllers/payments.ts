@@ -313,7 +313,7 @@ const mpesaConfirmation = async (req: Request, res: Response) => {
 
           // send to stron
           let stronToken = await axios.post(
-            `http://www.server-newv.stronpower.com/swagger/VendingMeter`,
+            `http://www.server-newv.stronpower.com/api/VendingMeter`,
             {
               CompanyName: stron_config.CompanyName,
               UserName: stron_config.UserName,
