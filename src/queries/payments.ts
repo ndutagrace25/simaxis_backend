@@ -6,7 +6,19 @@ interface RevenueDataPoint {
   period: string;
   revenue: number;
   date: string;
+  kplc: number;
+  siMaxis: number;
+  esperanza: number;
 }
+
+// Helper function to calculate revenue split
+const calculateRevenueSplit = (totalRevenue: number) => {
+  const kplc = totalRevenue * 0.9; // 90%
+  const remaining = totalRevenue * 0.1; // 10%
+  const siMaxis = remaining * 0.85; // 85% of 10%
+  const esperanza = remaining * 0.15; // 15% of 10%
+  return { kplc, siMaxis, esperanza };
+};
 
 const getAllPayments = async (searchTerm = "") => {
   const searchCondition = {
@@ -75,11 +87,19 @@ const getDailyRevenue = async (
     raw: true,
   });
 
-  return dailyRevenue.map((item: any) => ({
-    period: item.day.toString(),
-    revenue: parseFloat(item.revenue) || 0,
-    date: item.date,
-  }));
+  return dailyRevenue.map((item: any) => {
+    const totalRev = parseFloat(item.revenue) || 0;
+    const dataYear = new Date(item.date).getFullYear();
+    const split = dataYear >= 2025 ? calculateRevenueSplit(totalRev) : { kplc: 0, siMaxis: 0, esperanza: 0 };
+    return {
+      period: item.day.toString(),
+      revenue: totalRev,
+      date: item.date,
+      kplc: split.kplc,
+      siMaxis: split.siMaxis,
+      esperanza: split.esperanza,
+    };
+  });
 };
 
 // Get monthly revenue for a specific year
@@ -121,11 +141,19 @@ const getMonthlyRevenue = async (year: number): Promise<RevenueDataPoint[]> => {
     "Dec",
   ];
 
-  return monthlyRevenue.map((item: any) => ({
-    period: months[parseInt(item.month) - 1],
-    revenue: parseFloat(item.revenue) || 0,
-    date: item.date,
-  }));
+  return monthlyRevenue.map((item: any) => {
+    const totalRev = parseFloat(item.revenue) || 0;
+    const dataYear = parseInt(item.date.substring(0, 4));
+    const split = dataYear >= 2025 ? calculateRevenueSplit(totalRev) : { kplc: 0, siMaxis: 0, esperanza: 0 };
+    return {
+      period: months[parseInt(item.month) - 1],
+      revenue: totalRev,
+      date: item.date,
+      kplc: split.kplc,
+      siMaxis: split.siMaxis,
+      esperanza: split.esperanza,
+    };
+  });
 };
 
 // Get yearly revenue for the last N years
@@ -152,11 +180,18 @@ const getYearlyRevenue = async (
     raw: true,
   });
 
-  return yearlyRevenue.map((item: any) => ({
-    period: item.year.toString(),
-    revenue: parseFloat(item.revenue) || 0,
-    date: item.year.toString(),
-  }));
+  return yearlyRevenue.map((item: any) => {
+    const totalRev = parseFloat(item.revenue) || 0;
+    const split = item.year >= 2025 ? calculateRevenueSplit(totalRev) : { kplc: 0, siMaxis: 0, esperanza: 0 };
+    return {
+      period: item.year.toString(),
+      revenue: totalRev,
+      date: item.year.toString(),
+      kplc: split.kplc,
+      siMaxis: split.siMaxis,
+      esperanza: split.esperanza,
+    };
+  });
 };
 
 export = {
