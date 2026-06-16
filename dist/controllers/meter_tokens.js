@@ -6,6 +6,7 @@ const http_status_1 = __importDefault(require("http-status"));
 const meter_tokens_1 = __importDefault(require("../queries/meter_tokens"));
 const utils_1 = require("../utils");
 const axios_1 = __importDefault(require("axios"));
+const moment_1 = __importDefault(require("moment"));
 const sms_config = require("../config/config").sms;
 const getMeterTokens = async (req, res) => {
     const meter_id = req?.query?.meter_id ? req.query.meter_id : "";
@@ -25,7 +26,7 @@ const getMeterTokens = async (req, res) => {
     }
 };
 const sendTokensManually = async (req, res) => {
-    const { token, phone, meter_number } = req.body;
+    const { token, token_id, phone, meter_number } = req.body;
     const cleanedPhone = (0, utils_1.cleanPhone)(phone);
     if (!cleanedPhone) {
         return res.status(http_status_1.default.BAD_REQUEST).json({
@@ -34,12 +35,31 @@ const sendTokensManually = async (req, res) => {
         });
     }
     try {
+        const meterToken = token_id
+            ? await meter_tokens_1.default.getMeterTokenById(token_id)
+            : await meter_tokens_1.default.getMeterTokenByToken(token);
+        if (!meterToken) {
+            return res.status(http_status_1.default.BAD_REQUEST).json({
+                statusCode: http_status_1.default.BAD_REQUEST,
+                message: "Token details not found",
+            });
+        }
+        const generatedAt = meterToken.issue_date || meterToken.created_at;
+        const formattedDate = generatedAt
+            ? (0, moment_1.default)(generatedAt).format("YYYY/MM/D HH:mm")
+            : "N/A";
+        const units = meterToken.total_units !== undefined && meterToken.total_units !== null
+            ? meterToken.total_units
+            : "N/A";
+        const amount = meterToken.amount !== undefined && meterToken.amount !== null
+            ? meterToken.amount
+            : "N/A";
         //send sms
         await axios_1.default.post(`${sms_config?.baseUrlOtp}`, {
             apikey: sms_config?.apikey,
             partnerID: sms_config?.partnerID,
             mobile: `${cleanedPhone}`,
-            message: `Mtr: ${meter_number}\nToken: ${token}`,
+            message: `Mtr: ${meter_number}\nToken: ${token}\nDate: ${formattedDate}\nUnits: ${units}\nAmt: ${amount}`,
             shortcode: "SI-MAXIS",
         });
         return res.status(http_status_1.default.OK).json({

@@ -88,6 +88,7 @@ const syncMeterToStron = async (req, res) => {
     const { id } = req.body;
     try {
         const meter = await meter_1.default.getMeterById(id);
+        console.log(meter?.dataValues.serial_number, meter?.dataValues?.MeterType?.dataValues?.type);
         if (!meter) {
             return res.status(http_status_1.default.BAD_REQUEST).json({
                 statusCode: http_status_1.default.BAD_REQUEST,
@@ -101,6 +102,7 @@ const syncMeterToStron = async (req, res) => {
             MeterID: meter.dataValues.serial_number,
             MeterType: meter?.dataValues?.MeterType?.dataValues?.type,
         });
+        console.log(response);
         if (response.status === 200 &&
             (response.data === "Meter ID already exists!" ||
                 response.data === "false")) {
@@ -123,6 +125,7 @@ const syncMeterToStron = async (req, res) => {
         });
     }
     catch (error) {
+        console.log(error);
         return res.status(http_status_1.default.BAD_REQUEST).json({
             statusCode: http_status_1.default.BAD_REQUEST,
             message: error.message,

@@ -14,6 +14,16 @@ const getAllMeterTokens = async (meter_id = "") => {
   return tokens;
 };
 
+const getMeterTokenById = async (id: string) => {
+  const token = await MeterToken.findOne({ where: { id } });
+  return token;
+};
+
+const getMeterTokenByToken = async (token: string) => {
+  const meterToken = await MeterToken.findOne({ where: { token } });
+  return meterToken;
+};
+
 const create = async (tokenDetails: {
   id: string;
   token: string;
@@ -31,4 +41,6 @@ const create = async (tokenDetails: {
 export = {
   create,
   getAllMeterTokens,
+  getMeterTokenById,
+  getMeterTokenByToken,
 };

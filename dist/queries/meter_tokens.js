@@ -13,6 +13,14 @@ const getAllMeterTokens = async (meter_id = "") => {
     });
     return tokens;
 };
+const getMeterTokenById = async (id) => {
+    const token = await models_1.MeterToken.findOne({ where: { id } });
+    return token;
+};
+const getMeterTokenByToken = async (token) => {
+    const meterToken = await models_1.MeterToken.findOne({ where: { token } });
+    return meterToken;
+};
 const create = async (tokenDetails) => {
     const token = await models_1.MeterToken.create(tokenDetails);
     return token;
@@ -20,4 +28,6 @@ const create = async (tokenDetails) => {
 module.exports = {
     create,
     getAllMeterTokens,
+    getMeterTokenById,
+    getMeterTokenByToken,
 };
