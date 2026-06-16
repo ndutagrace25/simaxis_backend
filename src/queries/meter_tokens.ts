@@ -1,15 +1,33 @@
+import { Op } from "sequelize";
 import { Meter, MeterToken } from "../models";
 
 const getAllMeterTokens = async (
   meter_id = "",
   page = 1,
   limit = 10,
-  exportAll = false
+  exportAll = false,
+  start_date = "",
+  end_date = ""
 ) => {
   const offset = (page - 1) * limit;
+  const where: Record<string, unknown> = meter_id ? { meter_id } : {};
+
+  if (start_date || end_date) {
+    const createdAtFilter: Record<symbol, Date> = {};
+
+    if (start_date) {
+      createdAtFilter[Op.gte] = new Date(`${start_date}T00:00:00.000Z`);
+    }
+
+    if (end_date) {
+      createdAtFilter[Op.lte] = new Date(`${end_date}T23:59:59.999Z`);
+    }
+
+    where.created_at = createdAtFilter;
+  }
 
   const tokens = await MeterToken.findAndCountAll({
-    where: meter_id ? { meter_id } : {},
+    where,
     include: [
       {
         model: Meter,

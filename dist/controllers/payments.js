@@ -203,11 +203,26 @@ const paymentCallback = async (req, res) => {
 };
 const getAllPayments = async (req, res) => {
     const keyword = req?.query?.keyword ? req.query.keyword : "";
+    const startDate = req?.query?.start_date ? req.query.start_date : "";
+    const endDate = req?.query?.end_date ? req.query.end_date : "";
+    const page = Math.max(1, Number(req?.query?.page) || 1);
+    const limit = Math.max(1, Number(req?.query?.limit) || 10);
+    const exportAll = req?.query?.export_all === "true";
     try {
-        const payments = await payments_1.default.getAllPayments(keyword);
+        const { rows: payments, count: total } = await payments_1.default.getAllPayments({
+            searchTerm: keyword,
+            page,
+            limit,
+            exportAll,
+            startDate,
+            endDate,
+        });
         return res.status(http_status_1.default.OK).json({
             statusCode: http_status_1.default.OK,
             payments,
+            total,
+            page: exportAll ? 1 : page,
+            limit: exportAll ? total : limit,
         });
     }
     catch (error) {

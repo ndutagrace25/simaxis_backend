@@ -9,19 +9,32 @@ const calculateRevenueSplit = (totalRevenue) => {
     const esperanza = remaining * 0.15; // 15% of 10%
     return { kplc, siMaxis, esperanza };
 };
-const getAllPayments = async (searchTerm = "") => {
-    const searchCondition = {
-        [sequelize_1.Op.or]: [
+const getAllPayments = async ({ searchTerm = "", page = 1, limit = 10, exportAll = false, startDate = "", endDate = "", } = {}) => {
+    const where = {};
+    if (searchTerm) {
+        where[sequelize_1.Op.or] = [
             { meter_number: { [sequelize_1.Op.iLike]: `%${searchTerm}%` } },
             { phone_number: { [sequelize_1.Op.iLike]: `%${searchTerm}%` } },
             { payment_code: { [sequelize_1.Op.iLike]: `%${searchTerm}%` } },
-        ],
-    };
-    const meters = await models_1.Payment.findAll({
-        where: searchTerm ? searchCondition : {},
+        ];
+    }
+    if (startDate || endDate) {
+        const paymentDateFilter = {};
+        if (startDate) {
+            paymentDateFilter[sequelize_1.Op.gte] = new Date(`${startDate}T00:00:00.000Z`);
+        }
+        if (endDate) {
+            paymentDateFilter[sequelize_1.Op.lte] = new Date(`${endDate}T23:59:59.999Z`);
+        }
+        where.payment_date = paymentDateFilter;
+    }
+    const offset = (page - 1) * limit;
+    const payments = await models_1.Payment.findAndCountAll({
+        where,
         order: [["created_at", "DESC"]],
+        ...(exportAll ? {} : { limit, offset }),
     });
-    return meters;
+    return payments;
 };
 const create = async (paymentDetails) => {
     const meter = await models_1.Payment.create(paymentDetails);

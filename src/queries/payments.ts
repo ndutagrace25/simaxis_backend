@@ -1,6 +1,15 @@
 import { Payment } from "../models";
 import { Op, fn, col, literal } from "sequelize";
 
+interface PaymentFilters {
+  searchTerm?: string;
+  page?: number;
+  limit?: number;
+  exportAll?: boolean;
+  startDate?: string;
+  endDate?: string;
+}
+
 // Types for API responses
 interface RevenueDataPoint {
   period: string;
@@ -20,19 +29,45 @@ const calculateRevenueSplit = (totalRevenue: number) => {
   return { kplc, siMaxis, esperanza };
 };
 
-const getAllPayments = async (searchTerm = "") => {
-  const searchCondition = {
-    [Op.or]: [
+const getAllPayments = async ({
+  searchTerm = "",
+  page = 1,
+  limit = 10,
+  exportAll = false,
+  startDate = "",
+  endDate = "",
+}: PaymentFilters = {}) => {
+  const where: any = {};
+
+  if (searchTerm) {
+    where[Op.or] = [
       { meter_number: { [Op.iLike]: `%${searchTerm}%` } },
       { phone_number: { [Op.iLike]: `%${searchTerm}%` } },
       { payment_code: { [Op.iLike]: `%${searchTerm}%` } },
-    ],
-  };
-  const meters = await Payment.findAll({
-    where: searchTerm ? searchCondition : {},
+    ];
+  }
+
+  if (startDate || endDate) {
+    const paymentDateFilter: Record<symbol, Date> = {};
+
+    if (startDate) {
+      paymentDateFilter[Op.gte] = new Date(`${startDate}T00:00:00.000Z`);
+    }
+
+    if (endDate) {
+      paymentDateFilter[Op.lte] = new Date(`${endDate}T23:59:59.999Z`);
+    }
+
+    where.payment_date = paymentDateFilter;
+  }
+
+  const offset = (page - 1) * limit;
+  const payments = await Payment.findAndCountAll({
+    where,
     order: [["created_at", "DESC"]],
+    ...(exportAll ? {} : { limit, offset }),
   });
-  return meters;
+  return payments;
 };
 
 const create = async (paymentDetails: {

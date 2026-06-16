@@ -246,11 +246,28 @@ const paymentCallback = async (req: Request, res: Response) => {
 
 const getAllPayments = async (req: Request, res: Response) => {
   const keyword: any = req?.query?.keyword ? req.query.keyword : "";
+  const startDate: any = req?.query?.start_date ? req.query.start_date : "";
+  const endDate: any = req?.query?.end_date ? req.query.end_date : "";
+  const page = Math.max(1, Number(req?.query?.page) || 1);
+  const limit = Math.max(1, Number(req?.query?.limit) || 10);
+  const exportAll = req?.query?.export_all === "true";
+
   try {
-    const payments = await paymentsQueries.getAllPayments(keyword);
+    const { rows: payments, count: total } = await paymentsQueries.getAllPayments({
+      searchTerm: keyword,
+      page,
+      limit,
+      exportAll,
+      startDate,
+      endDate,
+    });
+
     return res.status(httpStatus.OK).json({
       statusCode: httpStatus.OK,
       payments,
+      total,
+      page: exportAll ? 1 : page,
+      limit: exportAll ? total : limit,
     });
   } catch (error: any) {
     console.error("Error fetching payments:", error);

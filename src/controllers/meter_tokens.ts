@@ -8,6 +8,8 @@ const sms_config = require("../config/config").sms;
 
 const getMeterTokens = async (req: Request, res: Response) => {
   const meter_id: any = req?.query?.meter_id ? req.query.meter_id : "";
+  const start_date: any = req?.query?.start_date ? req.query.start_date : "";
+  const end_date: any = req?.query?.end_date ? req.query.end_date : "";
   const page = Math.max(1, Number(req?.query?.page) || 1);
   const limit = Math.max(1, Number(req?.query?.limit) || 10);
   const exportAll = req?.query?.export_all === "true";
@@ -18,7 +20,9 @@ const getMeterTokens = async (req: Request, res: Response) => {
         meter_id,
         page,
         limit,
-        exportAll
+        exportAll,
+        start_date,
+        end_date
       );
 
     return res.status(httpStatus.OK).json({
