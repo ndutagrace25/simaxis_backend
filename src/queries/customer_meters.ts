@@ -4,14 +4,25 @@ const getAllCustomerMeters = async (query?: {
   meter_id?: string;
   customer_id?: string;
   county_number?: string;
+  categories?: string;
 }) => {
+  const whereClause: any = {};
+
+  if (query?.meter_id) {
+    whereClause.meter_id = query.meter_id;
+  } else if (query?.customer_id) {
+    whereClause.customer_id = query.customer_id;
+  }
+
+  if (query?.categories) {
+    whereClause.categories = query.categories;
+  }
+
   const customer_meters = await CustomerMeter.findAll({
     where: query?.meter_id
-      ? {
-          meter_id: query?.meter_id,
-        }
-      : query?.customer_id
-      ? { customer_id: query?.customer_id }
+      ? whereClause
+      : query?.customer_id || query?.categories
+      ? whereClause
       : {},
     include: [
       {

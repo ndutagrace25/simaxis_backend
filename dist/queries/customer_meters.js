@@ -1,13 +1,21 @@
 "use strict";
 const models_1 = require("../models");
 const getAllCustomerMeters = async (query) => {
+    const whereClause = {};
+    if (query?.meter_id) {
+        whereClause.meter_id = query.meter_id;
+    }
+    else if (query?.customer_id) {
+        whereClause.customer_id = query.customer_id;
+    }
+    if (query?.categories) {
+        whereClause.categories = query.categories;
+    }
     const customer_meters = await models_1.CustomerMeter.findAll({
         where: query?.meter_id
-            ? {
-                meter_id: query?.meter_id,
-            }
-            : query?.customer_id
-                ? { customer_id: query?.customer_id }
+            ? whereClause
+            : query?.customer_id || query?.categories
+                ? whereClause
                 : {},
         include: [
             {
