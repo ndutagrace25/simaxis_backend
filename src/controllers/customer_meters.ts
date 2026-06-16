@@ -24,7 +24,7 @@ const getCustomerMeters = async (req: Request, res: Response) => {
 };
 
 const syncCustomerAccountToStron = async (req: Request, res: Response) => {
-  const { id, Account_ID, CUST_ID, METER_ID } = req.body;
+  const { id, Account_ID, CUST_ID, METER_ID, Categories } = req.body;
 
   try {
     const customer_meter = await customerMetersQueries.getCustomerMeterById(id);
@@ -35,7 +35,12 @@ const syncCustomerAccountToStron = async (req: Request, res: Response) => {
         message: "Account not found",
       });
     }
-    const response = await axios.post(`${config.baseUrl}/NewAccount`, {
+    const category = Categories || customer_meter.get("categories") || "Domestic";
+    const endpoint = customer_meter.get("is_synced_to_stron")
+      ? "UpdateAccount"
+      : "NewAccount";
+
+    const response = await axios.post(`${config.baseUrl}/${endpoint}`, {
       CompanyName: config.CompanyName,
       UserName: config.UserName,
       PassWord: config.PassWord,
@@ -43,7 +48,7 @@ const syncCustomerAccountToStron = async (req: Request, res: Response) => {
       CUST_ID,
       METER_ID,
       SStation_ID: "Sta-00001",
-      Categories: "Domestic",
+      Categories: category,
     });
 
     if (
@@ -67,10 +72,13 @@ const syncCustomerAccountToStron = async (req: Request, res: Response) => {
     // update the customer meter
     const updatedCustomerMeter = await customerMetersQueries.update(id, {
       is_synced_to_stron: true,
+      categories: category,
     });
     return res.status(httpStatus.OK).json({
       statusCode: httpStatus.OK,
-      message: "Customer meter saved to Stron successfully",
+      message: customer_meter.get("is_synced_to_stron")
+        ? "Customer meter updated on Stron successfully"
+        : "Customer meter saved to Stron successfully",
       customer_meter: updatedCustomerMeter,
       stron_status: response.data,
     });
@@ -126,11 +134,12 @@ const getCustomerMetersPerTenant = async (req: Request, res: Response) => {
 };
 
 const updateCustomerMeter = async (req: Request, res: Response) => {
-  const { tenant_id } = req.body;
+  const { tenant_id, categories } = req.body;
   const { id } = req.params;
   try {
     const updatedCustomerMeter = await customerMetersQueries.update(id, {
       tenant_id,
+      categories,
     });
     return res.status(httpStatus.OK).json({
       statusCode: httpStatus.OK,

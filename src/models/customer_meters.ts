@@ -5,6 +5,7 @@ interface CustomerMeterAttributes {
   customer_id: string;
   meter_id: string;
   tenant_id?: string;
+  categories?: string;
   is_synced_to_stron?: boolean;
   account_id?: number;
   created_at?: Date;
@@ -18,6 +19,7 @@ export class CustomerMeter
   public id!: string;
   public customer_id!: string;
   public meter_id!: string;
+  public categories!: string;
   public is_synced_to_stron?: boolean;
   public account_id!: number;
   public created_at?: Date;
@@ -51,6 +53,11 @@ export const CustomerMeterFactory = (sequelize: Sequelize) => {
         },
         onUpdate: "CASCADE",
         onDelete: "SET NULL",
+      },
+      categories: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: "Domestic",
       },
       is_synced_to_stron: {
         type: DataTypes.BOOLEAN,
