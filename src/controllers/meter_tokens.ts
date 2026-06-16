@@ -8,11 +8,25 @@ const sms_config = require("../config/config").sms;
 
 const getMeterTokens = async (req: Request, res: Response) => {
   const meter_id: any = req?.query?.meter_id ? req.query.meter_id : "";
+  const page = Math.max(1, Number(req?.query?.page) || 1);
+  const limit = Math.max(1, Number(req?.query?.limit) || 10);
+  const exportAll = req?.query?.export_all === "true";
+
   try {
-    const tokens = await meterTokensQueries.getAllMeterTokens(meter_id);
+    const { rows: tokens, count: total } =
+      await meterTokensQueries.getAllMeterTokens(
+        meter_id,
+        page,
+        limit,
+        exportAll
+      );
+
     return res.status(httpStatus.OK).json({
       statusCode: httpStatus.OK,
       tokens,
+      total,
+      page: exportAll ? 1 : page,
+      limit: exportAll ? total : limit,
     });
   } catch (error: any) {
     console.error("Error fetching tokens:", error);

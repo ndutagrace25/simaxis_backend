@@ -1,7 +1,8 @@
 "use strict";
 const models_1 = require("../models");
-const getAllMeterTokens = async (meter_id = "") => {
-    const tokens = await models_1.MeterToken.findAll({
+const getAllMeterTokens = async (meter_id = "", page = 1, limit = 10, exportAll = false) => {
+    const offset = (page - 1) * limit;
+    const tokens = await models_1.MeterToken.findAndCountAll({
         where: meter_id ? { meter_id } : {},
         include: [
             {
@@ -10,6 +11,8 @@ const getAllMeterTokens = async (meter_id = "") => {
             },
         ],
         order: [["created_at", "DESC"]],
+        ...(exportAll ? {} : { limit, offset }),
+        distinct: true,
     });
     return tokens;
 };

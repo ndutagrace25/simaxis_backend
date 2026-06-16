@@ -1,7 +1,14 @@
 import { Meter, MeterToken } from "../models";
 
-const getAllMeterTokens = async (meter_id = "") => {
-  const tokens = await MeterToken.findAll({
+const getAllMeterTokens = async (
+  meter_id = "",
+  page = 1,
+  limit = 10,
+  exportAll = false
+) => {
+  const offset = (page - 1) * limit;
+
+  const tokens = await MeterToken.findAndCountAll({
     where: meter_id ? { meter_id } : {},
     include: [
       {
@@ -10,6 +17,8 @@ const getAllMeterTokens = async (meter_id = "") => {
       },
     ],
     order: [["created_at", "DESC"]],
+    ...(exportAll ? {} : { limit, offset }),
+    distinct: true,
   });
   return tokens;
 };

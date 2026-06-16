@@ -10,11 +10,17 @@ const moment_1 = __importDefault(require("moment"));
 const sms_config = require("../config/config").sms;
 const getMeterTokens = async (req, res) => {
     const meter_id = req?.query?.meter_id ? req.query.meter_id : "";
+    const page = Math.max(1, Number(req?.query?.page) || 1);
+    const limit = Math.max(1, Number(req?.query?.limit) || 10);
+    const exportAll = req?.query?.export_all === "true";
     try {
-        const tokens = await meter_tokens_1.default.getAllMeterTokens(meter_id);
+        const { rows: tokens, count: total } = await meter_tokens_1.default.getAllMeterTokens(meter_id, page, limit, exportAll);
         return res.status(http_status_1.default.OK).json({
             statusCode: http_status_1.default.OK,
             tokens,
+            total,
+            page: exportAll ? 1 : page,
+            limit: exportAll ? total : limit,
         });
     }
     catch (error) {
