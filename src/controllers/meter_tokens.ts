@@ -1,10 +1,18 @@
 import httpStatus from "http-status";
 import meterTokensQueries from "../queries/meter_tokens";
+import paymentsQueries from "../queries/payments";
 import { Request, Response } from "express";
 import { cleanPhone } from "../utils";
 import axios from "axios";
 import moment from "moment";
+import logging from "npmlog";
 const sms_config = require("../config/config").sms;
+
+// Meter numbers are sequential/guessable, so this public endpoint requires
+// the payment_code too (the M-Pesa receipt code from the customer's
+// confirmation SMS) as a second factor only the payer would have.
+const METER_NUMBER_PATTERN = /^[0-9]{1,20}$/;
+const PAYMENT_CODE_PATTERN = /^[A-Za-z0-9]{1,20}$/;
 
 const getMeterTokens = async (req: Request, res: Response) => {
   const meter_id: any = req?.query?.meter_id ? req.query.meter_id : "";
@@ -99,4 +107,70 @@ const sendTokensManually = async (req: Request, res: Response) => {
   }
 };
 
-export = { getMeterTokens, sendTokensManually };
+const getLastTokenForCustomer = async (req: Request, res: Response) => {
+  const meter_number = String(req.query.meter_number || "").trim();
+  const payment_code = String(req.query.payment_code || "").trim();
+
+  const notFound = () =>
+    res.status(httpStatus.NOT_FOUND).json({
+      statusCode: httpStatus.NOT_FOUND,
+      message:
+        "No matching token found. Please check the meter number and payment code.",
+    });
+
+  if (
+    !METER_NUMBER_PATTERN.test(meter_number) ||
+    !PAYMENT_CODE_PATTERN.test(payment_code)
+  ) {
+    return res.status(httpStatus.BAD_REQUEST).json({
+      statusCode: httpStatus.BAD_REQUEST,
+      message: "A valid meter_number and payment_code are both required",
+    });
+  }
+
+  try {
+    const payment = await paymentsQueries.getPaymentByMeterNumberAndCode(
+      meter_number,
+      payment_code
+    );
+
+    if (!payment) {
+      logging.warn(
+        "public-token-lookup",
+        `No payment match for meter ${meter_number} from ip ${req.ip}`
+      );
+      return notFound();
+    }
+
+    const meterToken = await meterTokensQueries.getTokenForPayment(
+      payment.get("meter_id") as string,
+      payment.get("amount") as number,
+      payment.get("payment_date") as Date
+    );
+
+    if (!meterToken) {
+      logging.warn(
+        "public-token-lookup",
+        `Payment matched but no token found for meter ${meter_number} from ip ${req.ip}`
+      );
+      return notFound();
+    }
+
+    const dateGenerated =
+      meterToken.get("issue_date") || meterToken.get("created_at");
+
+    return res.status(httpStatus.OK).json({
+      statusCode: httpStatus.OK,
+      meter_number,
+      token: meterToken.get("token"),
+      amount: meterToken.get("amount"),
+      units: meterToken.get("total_units"),
+      date_generated: dateGenerated,
+    });
+  } catch (error: any) {
+    console.error("Error fetching public token lookup:", error);
+    return notFound();
+  }
+};
+
+export = { getMeterTokens, sendTokensManually, getLastTokenForCustomer };

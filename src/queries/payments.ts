@@ -94,6 +94,17 @@ const getPaymentByMpesaCode = async (payment_code: string) => {
   return payment;
 };
 
+const getPaymentByMeterNumberAndCode = async (
+  meter_number: string,
+  payment_code: string
+) => {
+  const payment = await Payment.findOne({
+    where: { meter_number, payment_code },
+  });
+
+  return payment;
+};
+
 // Get daily revenue for a specific month
 const getDailyRevenue = async (
   year: number,
@@ -233,6 +244,7 @@ export = {
   create,
   getAllPayments,
   getPaymentByMpesaCode,
+  getPaymentByMeterNumberAndCode,
   getDailyRevenue,
   getMonthlyRevenue,
   getYearlyRevenue,

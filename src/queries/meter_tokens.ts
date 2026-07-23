@@ -51,6 +51,40 @@ const getMeterTokenByToken = async (token: string) => {
   return meterToken;
 };
 
+// There is no direct FK between meter_tokens and payments (a token is
+// created in the same request that saves the payment, using the same
+// meter_id/amount). Correlate by matching those and picking the token
+// whose created_at is closest to the payment's date.
+const getTokenForPayment = async (
+  meter_id: string,
+  amount: number,
+  payment_date?: Date | null
+) => {
+  const candidates = await MeterToken.findAll({
+    where: { meter_id, amount },
+    order: [["created_at", "DESC"]],
+  });
+
+  if (candidates.length === 0) {
+    return null;
+  }
+
+  if (candidates.length === 1 || !payment_date) {
+    return candidates[0];
+  }
+
+  const referenceTime = new Date(payment_date).getTime();
+  return candidates.reduce((closest, current) => {
+    const closestDiff = Math.abs(
+      new Date(closest.get("created_at") as Date).getTime() - referenceTime
+    );
+    const currentDiff = Math.abs(
+      new Date(current.get("created_at") as Date).getTime() - referenceTime
+    );
+    return currentDiff < closestDiff ? current : closest;
+  });
+};
+
 const create = async (tokenDetails: {
   id: string;
   token: string;
@@ -70,4 +104,5 @@ export = {
   getAllMeterTokens,
   getMeterTokenById,
   getMeterTokenByToken,
+  getTokenForPayment,
 };
