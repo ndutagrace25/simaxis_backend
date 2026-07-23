@@ -11,7 +11,7 @@ module.exports = {
     logging: false,
     timezone: "Africa/Nairobi",
     dialectOptions: {
-      ssl: true, // Disabled for localhost development
+      // ssl: true, // Disabled for localhost development
     },
   },
   test: {
@@ -23,7 +23,7 @@ module.exports = {
     logging: false,
     timezone: "Africa/Nairobi",
     dialectOptions: {
-      ssl: true, // Disabled for localhost testing
+      // ssl: true, // Disabled for localhost testing
     },
   },
   production: {
