@@ -49,6 +49,45 @@ const getMeterTokens = async (req: Request, res: Response) => {
   }
 };
 
+const getMonthlyTokenUsageReport = async (req: Request, res: Response) => {
+  const now = new Date();
+  const month = Math.max(
+    1,
+    Math.min(12, Number(req?.query?.month) || now.getMonth() + 1)
+  );
+  const year = Number(req?.query?.year) || now.getFullYear();
+  const meter_id: any = req?.query?.meter_id ? req.query.meter_id : "";
+  const page = Math.max(1, Number(req?.query?.page) || 1);
+  const limit = Math.max(1, Number(req?.query?.limit) || 10);
+  const exportAll = req?.query?.export_all === "true";
+
+  try {
+    const { rows: data, total } =
+      await meterTokensQueries.getMonthlyTokenUsageReport(
+        month,
+        year,
+        meter_id,
+        page,
+        limit,
+        exportAll
+      );
+
+    return res.status(httpStatus.OK).json({
+      statusCode: httpStatus.OK,
+      data,
+      total,
+      page: exportAll ? 1 : page,
+      limit: exportAll ? total : limit,
+    });
+  } catch (error: any) {
+    console.error("Error fetching monthly token usage report:", error);
+    return res.status(httpStatus.BAD_REQUEST).json({
+      statusCode: httpStatus.BAD_REQUEST,
+      message: error.message,
+    });
+  }
+};
+
 const sendTokensManually = async (req: Request, res: Response) => {
   const { token, token_id, phone, meter_number } = req.body;
 
@@ -173,4 +212,9 @@ const getLastTokenForCustomer = async (req: Request, res: Response) => {
   }
 };
 
-export = { getMeterTokens, sendTokensManually, getLastTokenForCustomer };
+export = {
+  getMeterTokens,
+  sendTokensManually,
+  getLastTokenForCustomer,
+  getMonthlyTokenUsageReport,
+};

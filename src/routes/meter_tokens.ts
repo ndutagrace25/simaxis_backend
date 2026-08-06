@@ -6,6 +6,11 @@ import { publicTokenLookupLimiter } from "../utils/rateLimiter";
 const router: Router = express.Router();
 
 router.get("/", verifyToken, meter_tokens.getMeterTokens);
+router.get(
+  "/monthly-report",
+  verifyToken,
+  meter_tokens.getMonthlyTokenUsageReport
+);
 router.post(
   "/send-tokens-manually",
   verifyToken,

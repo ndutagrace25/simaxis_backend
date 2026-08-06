@@ -1,5 +1,6 @@
-import { Op } from "sequelize";
-import { Meter, MeterToken } from "../models";
+import { Op, QueryTypes } from "sequelize";
+import { Meter, MeterToken, sequelize } from "../models";
+import moment from "moment";
 
 const getAllMeterTokens = async (
   meter_id = "",
@@ -99,10 +100,66 @@ const create = async (tokenDetails: {
   return token;
 };
 
+const getMonthlyTokenUsageReport = async (
+  month: number,
+  year: number,
+  meter_id = "",
+  page = 1,
+  limit = 10,
+  exportAll = false
+) => {
+  const start = moment({ year, month: month - 1, day: 1 }).startOf("month");
+  const end = moment({ year, month: month - 1, day: 1 }).endOf("month");
+  const offset = (page - 1) * limit;
+
+  const replacements: Record<string, unknown> = {
+    start: start.toDate(),
+    end: end.toDate(),
+    meter_id: meter_id || null,
+  };
+
+  const rows = await sequelize.query(
+    `SELECT m.id AS meter_id, m.serial_number,
+            c.first_name, c.middle_name, c.last_name,
+            cm.categories,
+            COALESCE(SUM(mt.amount), 0)      AS total_amount,
+            COALESCE(SUM(mt.total_units), 0) AS total_units,
+            COUNT(mt.id)                     AS token_count
+     FROM meters m
+     LEFT JOIN meter_tokens mt
+            ON mt.meter_id = m.id
+           AND mt.created_at BETWEEN :start AND :end
+     LEFT JOIN customer_meters cm ON cm.meter_id = m.id
+     LEFT JOIN customers c ON c.id = cm.customer_id
+     WHERE (:meter_id::uuid IS NULL OR m.id = :meter_id::uuid)
+     GROUP BY m.id, m.serial_number, c.first_name, c.middle_name, c.last_name, cm.categories
+     ORDER BY total_units DESC
+     ${exportAll ? "" : "LIMIT :limit OFFSET :offset"}`,
+    {
+      replacements: exportAll
+        ? replacements
+        : { ...replacements, limit, offset },
+      type: QueryTypes.SELECT,
+    }
+  );
+
+  const [{ count }] = await sequelize.query<{ count: string }>(
+    `SELECT COUNT(*)::int AS count FROM meters m
+     WHERE (:meter_id::uuid IS NULL OR m.id = :meter_id::uuid)`,
+    {
+      replacements: { meter_id: meter_id || null },
+      type: QueryTypes.SELECT,
+    }
+  );
+
+  return { rows, total: Number(count) };
+};
+
 export = {
   create,
   getAllMeterTokens,
   getMeterTokenById,
   getMeterTokenByToken,
   getTokenForPayment,
+  getMonthlyTokenUsageReport,
 };
