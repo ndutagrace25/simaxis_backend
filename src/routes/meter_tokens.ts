@@ -16,12 +16,12 @@ router.post(
   verifyToken,
   meter_tokens.sendTokensManually
 );
-// Public: no verifyToken. Requires meter_number + payment_code (M-Pesa
-// receipt code) as a second factor, and is rate-limited per IP.
+// Public: no verifyToken. Looks up by meter_number alone (11 digits),
+// rate-limited per IP to slow down enumeration attempts.
 router.get(
   "/public/last-token",
   publicTokenLookupLimiter,
-  meter_tokens.getLastTokenForCustomer
+  meter_tokens.getLatestTokensForCustomer
 );
 
 export default router;

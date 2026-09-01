@@ -56,6 +56,16 @@ const getMeterTokenByToken = async (token: string) => {
 // created in the same request that saves the payment, using the same
 // meter_id/amount). Correlate by matching those and picking the token
 // whose created_at is closest to the payment's date.
+const getLatestTokensForMeter = async (meter_id: string, limit = 3) => {
+  const tokens = await MeterToken.findAll({
+    where: { meter_id },
+    order: [["created_at", "DESC"]],
+    limit,
+  });
+
+  return tokens;
+};
+
 const getTokenForPayment = async (
   meter_id: string,
   amount: number,
@@ -160,6 +170,7 @@ export = {
   getAllMeterTokens,
   getMeterTokenById,
   getMeterTokenByToken,
+  getLatestTokensForMeter,
   getTokenForPayment,
   getMonthlyTokenUsageReport,
 };
