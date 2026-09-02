@@ -1,6 +1,7 @@
 import httpStatus from "http-status";
 import meterTokensQueries from "../queries/meter_tokens";
 import meterQueries from "../queries/meter";
+import websiteTokenChecksQueries from "../queries/website_token_checks";
 import { Request, Response } from "express";
 import { cleanPhone } from "../utils";
 import axios from "axios";
@@ -160,6 +161,10 @@ const getLatestTokensForCustomer = async (req: Request, res: Response) => {
       message: "A valid 11-digit meter_number is required",
     });
   }
+
+  websiteTokenChecksQueries.create(meter_number).catch((error: any) => {
+    console.error("Error logging website token check:", error);
+  });
 
   try {
     const meter = await meterQueries.getMeterBySerialNumber(

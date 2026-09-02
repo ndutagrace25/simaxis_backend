@@ -48,6 +48,7 @@ import {
   payments,
   tenant,
   user,
+  website_token_checks,
 } from "./routes";
 
 app.use("/callback", callback);
@@ -61,6 +62,7 @@ app.use("/payments", payments);
 app.use("/tenant", tenant);
 app.use("/tokens", meter_tokens);
 app.use("/user", user);
+app.use("/website-token-checks", website_token_checks);
 
 sequelize
   .sync()

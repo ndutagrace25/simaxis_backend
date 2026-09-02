@@ -9,6 +9,7 @@ import meter_types from "./meter_types";
 import payments from "./payments";
 import tenant from "./tenant";
 import user from "./user";
+import website_token_checks from "./website_token_checks";
 
 export {
   callback,
@@ -22,4 +23,5 @@ export {
   payments,
   tenant,
   user,
+  website_token_checks,
 };

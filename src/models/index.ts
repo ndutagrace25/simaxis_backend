@@ -9,6 +9,7 @@ import { CustomerMeterFactory } from "./customer_meters";
 import { MeterTokenFactory } from "./meter_tokens";
 import { PaymentFactory } from "./payments";
 import { TenantsFactory } from "./tenants";
+import { WebsiteTokenCheckFactory } from "./website_token_checks";
 dotenv.config();
 
 const env = process.env.NODE_ENV;
@@ -34,6 +35,7 @@ const Meter = MeterFactory(sequelize);
 const MeterToken = MeterTokenFactory(sequelize);
 const Payment = PaymentFactory(sequelize);
 const Tenant = TenantsFactory(sequelize);
+const WebsiteTokenCheck = WebsiteTokenCheckFactory(sequelize);
 
 // Define associations
 // CUSTOMERS AND USERS
@@ -71,4 +73,5 @@ export {
   Payment,
   Tenant,
   User,
+  WebsiteTokenCheck,
 };
