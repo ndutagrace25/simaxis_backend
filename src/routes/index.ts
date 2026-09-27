@@ -2,6 +2,7 @@ import callback from "./callback";
 import counties from "./counties";
 import customer from "./customer";
 import customer_meters from "./customer_meters";
+import esperanza_payments from "./esperanza_payments";
 import landlord from "./landlords";
 import meter from "./meter";
 import meter_tokens from "./meter_tokens";
@@ -16,6 +17,7 @@ export {
   counties,
   customer,
   customer_meters,
+  esperanza_payments,
   landlord,
   meter,
   meter_tokens,

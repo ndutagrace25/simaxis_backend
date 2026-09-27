@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import { v4 as uuidv4 } from "uuid";
 import customerMeterQueries from "../queries/customer_meters";
 import paymentsQueries from "../queries/payments";
+import esperanzaPaymentsQueries from "../queries/esperanza_payments";
 import tokensQueries from "../queries/meter_tokens";
 import { PaymentAttributes } from "../models/payments";
 import axios from "axios";
@@ -603,10 +604,17 @@ const getRevenueData = async (req: Request, res: Response) => {
     }
 
     const totalRevenue = data.reduce((sum, item) => sum + item.revenue, 0);
+    // Esperanza figures are cumulative and not tied to the selected filter
+    const [esperanzaTotalToDate, esperanzaPaidToDate] = await Promise.all([
+      paymentsQueries.getEsperanzaTotalToDate(),
+      esperanzaPaymentsQueries.getTotalPaid(),
+    ]);
 
     return res.status(httpStatus.OK).json({
       data,
       totalRevenue,
+      esperanzaPaidToDate,
+      esperanzaBalanceToDate: esperanzaTotalToDate - esperanzaPaidToDate,
       periodLabel,
     });
   } catch (error: any) {

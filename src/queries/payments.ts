@@ -240,6 +240,14 @@ const getYearlyRevenue = async (
   });
 };
 
+// Esperanza's total share to date: the split applies to payments from 2025 onwards
+const getEsperanzaTotalToDate = async (): Promise<number> => {
+  const total = await Payment.sum("amount", {
+    where: { created_at: { [Op.gte]: new Date(2025, 0, 1, 0, 0, 0, 0) } },
+  });
+  return calculateRevenueSplit(Number(total) || 0).esperanza;
+};
+
 export = {
   create,
   getAllPayments,
@@ -248,4 +256,5 @@ export = {
   getDailyRevenue,
   getMonthlyRevenue,
   getYearlyRevenue,
+  getEsperanzaTotalToDate,
 };

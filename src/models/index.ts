@@ -10,6 +10,7 @@ import { MeterTokenFactory } from "./meter_tokens";
 import { PaymentFactory } from "./payments";
 import { TenantsFactory } from "./tenants";
 import { WebsiteTokenCheckFactory } from "./website_token_checks";
+import { EsperanzaPaymentFactory } from "./esperanza_payments";
 dotenv.config();
 
 const env = process.env.NODE_ENV;
@@ -36,6 +37,7 @@ const MeterToken = MeterTokenFactory(sequelize);
 const Payment = PaymentFactory(sequelize);
 const Tenant = TenantsFactory(sequelize);
 const WebsiteTokenCheck = WebsiteTokenCheckFactory(sequelize);
+const EsperanzaPayment = EsperanzaPaymentFactory(sequelize);
 
 // Define associations
 // CUSTOMERS AND USERS
@@ -62,11 +64,15 @@ MeterToken.belongsTo(Meter, {foreignKey: "meter_id"})
 // TENANTS AND USERS
 User.hasOne(Tenant, { foreignKey: "user_id" });
 Tenant.belongsTo(User, { foreignKey: "user_id" });
+// ESPERANZA PAYMENTS AND USERS
+EsperanzaPayment.belongsTo(User, { foreignKey: "created_by", as: "creator" });
+EsperanzaPayment.belongsTo(User, { foreignKey: "updated_by", as: "updater" });
 
 export {
   sequelize,
   Customer,
   CustomerMeter,
+  EsperanzaPayment,
   Meter,
   MeterToken,
   MeterTypes,

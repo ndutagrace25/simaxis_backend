@@ -41,6 +41,7 @@ import {
   counties,
   customer,
   customer_meters,
+  esperanza_payments,
   landlord,
   meter,
   meter_tokens,
@@ -55,6 +56,7 @@ app.use("/callback", callback);
 app.use("/counties", counties);
 app.use("/customer", customer);
 app.use("/customer-meter", customer_meters);
+app.use("/esperanza-payments", esperanza_payments);
 app.use("/landlord", landlord);
 app.use("/meter", meter);
 app.use("/meter_types", meter_types);
